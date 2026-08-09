@@ -53,7 +53,7 @@ export default function AlgothonPage() {
       <div className={styles.rsvpBar}>
         <div className="container">
           <div className={styles.rsvpContent}>
-            <strong>Apr 4, 10:00 AM – 1:00 PM (GMT+5)</strong>
+            <strong>Sep 29, 10:00 AM – 1:00 PM (GMT+5)</strong>
             <span className={styles.rsvpCount}>0 RSVP'd</span>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function AlgothonPage() {
             <Calendar className={styles.iconBig} />
             <div>
               <h3>When</h3>
-              <p>Sunday, April 4, 2027</p>
+              <p>Tuesday, September 29, 2026</p>
               <p>10:00 AM – 1:00 PM (GMT+5)</p>
             </div>
           </div>
@@ -246,6 +246,7 @@ export default function AlgothonPage() {
               <li>› <a href="#">About GDG</a></li>
               <li>› <a href="#">Chapters</a></li>
               <li>› <a href="#">Upcoming Events</a></li>
+              <li>› <a href="https://share.google/tC4uqVDSbojsVChXl" target="_blank" rel="noopener noreferrer">Bevy</a></li>
               <li>› <a href="#">Participation Terms</a></li>
               <li>› <a href="#">Privacy</a></li>
               <li>› <a href="#">Terms</a></li>
@@ -264,7 +265,7 @@ export default function AlgothonPage() {
         </div>
         <div className={`container ${styles.footerBottom}`}>
           <div>© 2026 Google · Upcoming Events</div>
-          <div className={styles.poweredBy}>Powered by <strong>Bevy</strong></div>
+          <div className={styles.poweredBy}>Powered by <a href="https://share.google/tC4uqVDSbojsVChXl" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}><strong>Bevy</strong></a></div>
         </div>
       </footer>
 

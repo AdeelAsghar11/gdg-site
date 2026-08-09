@@ -32,6 +32,7 @@ const Navbar = () => {
           <li><Link href="/team" className={pathname === '/team' ? styles.active : ''}>Team</Link></li>
           <li><Link href="/clubs" className={pathname === '/clubs' ? styles.active : ''}>Clubs</Link></li>
           <li><Link href="/resources" className={pathname === '/resources' ? styles.active : ''}>Resources</Link></li>
+          <li><a href="https://share.google/tC4uqVDSbojsVChXl" target="_blank" rel="noopener noreferrer">Bevy</a></li>
           
           {!isLoading && (
             <>

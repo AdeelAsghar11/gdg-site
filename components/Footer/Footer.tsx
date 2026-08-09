@@ -35,6 +35,7 @@ const Footer = () => {
                             <li><Link href="/blog">Blog</Link></li>
                             <li><Link href="/resources">Learning Resources</Link></li>
                             <li><Link href="/resources">Google Codelabs</Link></li>
+                            <li><a href="https://share.google/tC4uqVDSbojsVChXl" target="_blank" rel="noopener noreferrer">Bevy Platform</a></li>
                         </ul>
                     </div>
 

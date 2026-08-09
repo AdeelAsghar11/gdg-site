@@ -34,7 +34,7 @@ const FeaturedEvents = () => {
     {
       id: 4,
       title: "Build With AI: The Vibecoding Experience",
-      date: "Apr 4",
+      date: "Sep 29",
       location: "Islamabad",
       image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800",
       status: "upcoming"

@@ -142,7 +142,7 @@ export default async function EventsPage({
     id: 'algothon-static',
     title: 'Algothon: Workshop + Hackathon',
     slug: 'algothon',
-    date: new Date('2027-04-04T10:00:00.000Z'),
+    date: new Date('2026-09-29T10:00:00.000Z'),
     location: 'B26 Seminar Hall, COMSATS University Islamabad, Wah Campus',
     type: 'WORKSHOP',
     tags: [{ tag: 'Hackathon' }, { tag: 'Workshop' }],
