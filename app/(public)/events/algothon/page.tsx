@@ -24,12 +24,10 @@ export default function AlgothonPage() {
       <div className="container">
         {/* Banner */}
         <div className={styles.banner}>
-          <Image 
+          <img 
             src="/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp" 
             alt="Algothon Banner" 
-            fill
-            style={{ objectFit: 'cover' }}
-            priority
+            style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </div>
 
