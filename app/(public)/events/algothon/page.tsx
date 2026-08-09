@@ -155,7 +155,7 @@ export default function AlgothonPage() {
             <Calendar className={styles.iconBig} />
             <div>
               <h3>When</h3>
-              <p>Saturday, April 4, 2026</p>
+              <p>Sunday, April 4, 2027</p>
               <p>10:00 AM – 1:00 PM (GMT+5)</p>
             </div>
           </div>

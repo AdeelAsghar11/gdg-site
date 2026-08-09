@@ -138,6 +138,28 @@ export default async function EventsPage({
     console.warn('⚠️ Could not fetch all event data during build.');
   }
 
+  const algothonEvent = {
+    id: 'algothon-static',
+    title: 'Algothon: Workshop + Hackathon',
+    slug: 'algothon',
+    date: new Date('2027-04-04T10:00:00.000Z'),
+    location: 'B26 Seminar Hall, COMSATS University Islamabad, Wah Campus',
+    type: 'WORKSHOP',
+    tags: [{ tag: 'Hackathon' }, { tag: 'Workshop' }],
+    description: 'Algothon is a two-day immersive technology event designed to empower students, developers, and tech enthusiasts through a combination of hands-on learning and competitive innovation.',
+    badgeUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    imageUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    _count: { registrations: 0 },
+    isPublished: true,
+  } as any;
+
+  // Insert Algothon event manually
+  data.events = [algothonEvent, ...data.events];
+  allEvents = [algothonEvent, ...allEvents];
+  upcomingCount += 1;
+  if (!meta.types.includes('WORKSHOP')) meta.types.push('WORKSHOP');
+  if (!meta.topics.includes('Hackathon')) meta.topics.push('Hackathon');
+
   return (
     <div className="events-root">
       <style>{`
