@@ -1,9 +1,24 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { Facebook, Twitter, Linkedin, Mail, Calendar, MapPin, Map } from 'lucide-react';
 import styles from './algothon.module.css';
 
 export default function AlgothonPage() {
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      // When the user clicks the browser back button, 
+      // we force a redirect to the home page "/"
+      window.location.href = '/';
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   return (
     <div className={styles.pageWrapper}>
       <div className="container">
