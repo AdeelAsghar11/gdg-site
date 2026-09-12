@@ -45,3 +45,7 @@ next-env.d.ts
 # uploaded media
 /public/uploads/*
 !/public/uploads/avatars/.gitkeep
+
+# local scratch files and private testing guide
+/scratch/
+CLIENT_TESTING_GUIDE.md
