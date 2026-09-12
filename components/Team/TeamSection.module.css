@@ -1,37 +1,37 @@
 .container {
-    max-width: 1400px;
+    max-width: 1280px;
     margin: 0 auto;
     text-align: center;
-    padding: 80px 80px;
-    background-color: #fafafa;
+    padding: 80px 24px;
+    background-color: #ffffff;
 }
 
 @media (max-width: 768px) {
     .container {
-        padding: 40px 40px;
+        padding: 48px 16px;
     }
 }
 
 /* Header */
 .header {
-    margin-bottom: 80px;
+    margin-bottom: 56px;
 }
 
 .title {
     font-size: clamp(2.25rem, 5vw, 3rem);
     font-weight: 700;
     color: #202124;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     letter-spacing: -0.02em;
     font-family: 'Google Sans', sans-serif;
 }
 
 .description {
     color: #5f6368;
-    max-width: 768px;
+    max-width: 720px;
     margin: 0 auto;
     line-height: 1.6;
-    font-size: 1.125rem;
+    font-size: 1.1rem;
 }
 
 .brandName {
@@ -43,105 +43,96 @@
 .teamGrid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 80px 40px;
-    padding: 0 16px;
+    gap: 48px 32px;
+    justify-items: center;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 540px) {
     .teamGrid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 992px) {
     .teamGrid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
-/* Card Styles */
-.teamCardWrapper {
+/* Member Item */
+.teamMemberItem {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.teamCard {
+    text-align: center;
     width: 100%;
-    border-radius: 24px;
-    padding: 0 32px 32px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    border: 1px solid rgba(0,0,0,0.05);
+    max-width: 240px;
+    transition: transform 0.25s ease;
 }
 
-.teamCard:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+.teamMemberItem:hover .avatarContainer {
+    transform: scale(1.03);
 }
 
 .avatarContainer {
-    margin-top: -40px;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 20;
-}
-
-.avatarRing {
-    width: 112px;
-    height: 112px;
+    width: 148px;
+    height: 148px;
     border-radius: 50%;
     overflow: hidden;
-    border: 6px solid #fff;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    outline: 8px solid transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-bottom: 20px;
+    background-color: #f1f3f4;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.avatarRing img {
+.avatarImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 50%;
+    display: block;
 }
 
 .memberName {
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: #202124;
-    margin-bottom: 12px;
-    font-family: 'Google Sans', sans-serif;
+    margin: 0 0 6px 0;
+    font-family: 'Google Sans', 'Product Sans', sans-serif;
+    line-height: 1.25;
 }
 
-.roleBadge {
-    padding: 6px 16px;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+.memberRole {
+    font-size: 1.125rem;
+    color: #3c4043;
+    margin: 0 0 4px 0;
+    font-weight: 500;
+    line-height: 1.35;
 }
 
-/* Color Variants */
-.cardBlue { background: linear-gradient(180deg, #f8faff 0%, #e8f0fe 100%); border-color: #d2e3fc; }
-.ringBlue { outline-color: rgba(66, 133, 244, 0.08); background-color: #4285F4; }
-.badgeBlue { background: rgba(26, 115, 232, 0.1); color: #1a73e8; }
+.memberOrg {
+    font-size: 0.95rem;
+    color: #5f6368;
+    margin: 0 0 12px 0;
+    font-weight: 400;
+    line-height: 1.35;
+}
 
-.cardRed { background: linear-gradient(180deg, #fffafa 0%, #fce8e6 100%); border-color: #fad2cf; }
-.ringRed { outline-color: rgba(234, 67, 53, 0.08); background-color: #EA4335; }
-.badgeRed { background: rgba(217, 48, 37, 0.1); color: #d93025; }
+.profileLink {
+    color: #1a73e8;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    margin-top: 4px;
+    display: inline-block;
+}
 
-.cardYellow { background: linear-gradient(180deg, #fffdf7 0%, #fef7e0 100%); border-color: #feefc3; }
-.ringYellow { outline-color: rgba(251, 188, 4, 0.08); background-color: #FBBC04; }
-.badgeYellow { background: rgba(249, 171, 0, 0.1); color: #f9ab00; }
-
-.cardGreen { background: linear-gradient(180deg, #f8fff9 0%, #e6f4ea 100%); border-color: #ceead6; }
-.ringGreen { outline-color: rgba(52, 168, 83, 0.08); background-color: #34A853; }
-.badgeGreen { background: rgba(24, 128, 56, 0.1); color: #188038; }
+.profileLink:hover {
+    color: #1557b0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
 
 /* Indicators */
 .contributorsSection {
@@ -153,7 +144,7 @@
 }
 
 .contributorsText {
-    color: #9aa0a6;
+    color: #80868b;
     font-size: 0.875rem;
     font-style: italic;
     font-weight: 500;

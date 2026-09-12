@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic';
 import React, { Suspense } from 'react';
+import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 
 async function getClubs() {
@@ -37,6 +38,18 @@ const iconMap: Record<string, React.ElementType> = {
     'calendar': Calendar,
 };
 
+export function getClubSlug(name: string): string {
+    const n = name.toLowerCase();
+    if (n.includes('gen') || n.includes('ai')) return 'gen-ai-club';
+    if (n.includes('data')) return 'data-science-club';
+    if (n.includes('vibe') || n.includes('coding')) return 'vibe-coding-club';
+    if (n.includes('web')) return 'web-design-club';
+    if (n.includes('creative') || n.includes('ui') || n.includes('graphic')) return 'creative-club';
+    if (n.includes('social') || n.includes('growth')) return 'social-club';
+    if (n.includes('event')) return 'event-club';
+    return n.replace(/&/g, 'and').replace(/[^a-z0-9]/g, '-');
+}
+
 export default async function ClubsPage() {
     let clubs: any[] = [];
     let totalMemberCount = 0;
@@ -59,7 +72,6 @@ export default async function ClubsPage() {
         }
     } catch (error) {
         console.warn('⚠️ Could not fetch data for /clubs during build (database unreachable). Prerendering empty page.');
-        // Prerendering with empty data
     }
 
     const technical = clubs.filter(c => c.type === 'technical');
@@ -179,11 +191,6 @@ export default async function ClubsPage() {
                     border-radius: 50%;
                 }
 
-                @media (max-width: 768px) {
-                    .hero { padding: 6rem 1.5rem 4rem 1.5rem; }
-                    .hero-title { font-size: 2.5rem; }
-                }
-
                 .main-content {
                     max-width: 1100px;
                     margin: 0 auto;
@@ -238,18 +245,6 @@ export default async function ClubsPage() {
                 .col-span-6 { grid-column: span 6; }
                 .col-span-8 { grid-column: span 8; }
                 .col-span-12 { grid-column: span 12; }
-
-                @media (max-width: 768px) {
-                    .col-span-4, .col-span-6, .col-span-8 {
-                        grid-column: span 12;
-                    }
-                    .section-title {
-                        font-size: 1.875rem;
-                    }
-                    .hero-title {
-                        font-size: 3rem;
-                    }
-                }
 
                 .bento-card:hover {
                     border-color: #d1d4d7;
@@ -340,7 +335,7 @@ export default async function ClubsPage() {
                     display: flex;
                     align-items: center;
                     gap: 4px;
-                    opacity: 0.7;
+                    opacity: 0.75;
                     transition: opacity 0.2s, gap 0.2s;
                     text-decoration: none;
                 }
@@ -350,8 +345,47 @@ export default async function ClubsPage() {
                     gap: 8px;
                 }
 
-                .max-w-2xl { max-width: 42rem; }
-                .max-w-3xl { max-width: 48rem; }
+                /* Responsive Breakpoints - Defined after base classes to ensure cascade precedence */
+                @media (max-width: 992px) {
+                    .col-span-4 {
+                        grid-column: span 6;
+                    }
+                    .hero {
+                        padding: 6rem 1.5rem 3rem 1.5rem;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .bento-grid {
+                        grid-template-columns: 1fr;
+                        gap: 1.25rem;
+                    }
+                    .col-span-4, .col-span-6, .col-span-8, .col-span-12 {
+                        grid-column: span 1 / -1;
+                    }
+                    .section-title {
+                        font-size: 1.75rem;
+                    }
+                    .hero {
+                        padding: 5.5rem 1.25rem 2.5rem 1.25rem;
+                    }
+                    .hero-title {
+                        font-size: 2.2rem;
+                    }
+                    .hero-subtitle {
+                        font-size: 1rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    .main-content {
+                        padding: 2.5rem 1.25rem 5rem 1.25rem;
+                    }
+                    .section {
+                        margin-bottom: 3.5rem;
+                    }
+                    .bento-card {
+                        padding: 1.5rem;
+                    }
+                }
             `}</style>
 
             <header className="hero">
@@ -382,6 +416,7 @@ export default async function ClubsPage() {
                             const span = 'col-span-4';
                             const isMyClub = club.id === myClubId;
                             const IconCmp = (club.iconType ? iconMap[club.iconType] : null) || Code2;
+                            const slug = getClubSlug(club.name);
                             return (
                                 <div key={club.id} className={`bento-card ${span}`} style={{ color: club.colorToken || 'var(--g-blue)' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -403,9 +438,9 @@ export default async function ClubsPage() {
                                             <Users size={14} />
                                             {club._count.memberships} active
                                         </div>
-                                        <a href="/coming-soon" className="explore-link">
-                                            View Projects <ArrowRight size={14} />
-                                        </a>
+                                        <Link href={`/clubs/${slug}`} className="explore-link">
+                                            View Track <ArrowRight size={14} />
+                                        </Link>
                                     </div>
                                 </div>
                             )
@@ -425,6 +460,7 @@ export default async function ClubsPage() {
                             const span = 'col-span-4';
                             const isMyClub = club.id === myClubId;
                             const IconCmp = (club.iconType ? iconMap[club.iconType] : null) || PenTool;
+                            const slug = getClubSlug(club.name);
                             return (
                                 <div key={club.id} className={`bento-card ${span}`} style={{ color: club.colorToken || 'var(--g-yellow)' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -446,9 +482,9 @@ export default async function ClubsPage() {
                                             <Users size={14} />
                                             {club._count.memberships} active
                                         </div>
-                                        <a href="/coming-soon" className="explore-link">
-                                            View Projects <ArrowRight size={14} />
-                                        </a>
+                                        <Link href={`/clubs/${slug}`} className="explore-link">
+                                            View Track <ArrowRight size={14} />
+                                        </Link>
                                     </div>
                                 </div>
                             )

@@ -28,6 +28,150 @@ async function getEvent(slug: string): Promise<EventDetail> {
     return event as unknown as EventDetail;
 }
 
+interface EventSpeaker {
+    name: string;
+    role: string;
+    organization: string;
+    imageUrl: string;
+    linkedin?: string;
+}
+
+const IGNORE_PATTERNS = [
+    /panel/i,
+    /committee/i,
+    /teams?/i,
+    /leadership/i,
+    /arena/i,
+    /mentors?/i,
+    /organizing team/i,
+    /core team/i,
+    /campus leads?/i,
+    /domain leads?/i,
+    /raheem/i,
+    /rahim/i,
+    /adil/i
+];
+
+const KNOWN_MENTORS: Record<string, EventSpeaker> = {
+    'farhan ashraf': {
+        name: 'Farhan Ashraf',
+        role: 'AI SecOps Engineer & GitHub Campus Expert',
+        organization: 'Systems Limited',
+        imageUrl: '/images/mentors/farhan_ashraf.png',
+        linkedin: 'https://linkedin.com'
+    },
+    'dr. wasif': {
+        name: 'Dr. Wasif Nisar',
+        role: 'Faculty Advisor',
+        organization: 'COMSATS University Wah',
+        imageUrl: '/images/mentors/dr_wasif.png',
+        linkedin: 'https://linkedin.com'
+    },
+    'muhammad adil': {
+        name: 'Muhammad Adil',
+        role: 'GitHub Campus Expert',
+        organization: 'TechCre Solutions',
+        imageUrl: '/images/mentors/muhammad_adil.png',
+        linkedin: 'https://linkedin.com'
+    },
+    'munsif raza': {
+        name: 'Munsif Raza',
+        role: 'Mentor & Keynote Speaker',
+        organization: 'GDGoC CUI Wah',
+        imageUrl: '/images/mentors/munsif_raza.png',
+        linkedin: 'https://linkedin.com'
+    },
+    'sumama zaeem': {
+        name: 'Sumama Zaeem',
+        role: 'Technical Speaker',
+        organization: 'GDGoC CUI Wah',
+        imageUrl: '/images/mentors/sumama_zaeem.png',
+        linkedin: 'https://linkedin.com'
+    }
+};
+
+function resolveEventSpeakers(agendaItems: { speaker: string | null; title: string }[], members: any[], slug?: string): EventSpeaker[] {
+    if (slug === 'hack-the-vibe-2026') {
+        return [
+            KNOWN_MENTORS['munsif raza'],
+            KNOWN_MENTORS['farhan ashraf']
+        ].filter(Boolean);
+    }
+
+    if (slug === 'hack-data-v1') {
+        return [
+            KNOWN_MENTORS['farhan ashraf']
+        ].filter(Boolean);
+    }
+
+    const resolved = new Map<string, EventSpeaker>();
+
+    for (const item of agendaItems) {
+        if (!item.speaker) continue;
+
+        const noParens = item.speaker.replace(/\s*\([^)]*\)/g, '').trim();
+        const parts = noParens.split(/\s*(&|\band\b)\s*/i).filter(p => p && p !== '&' && p.toLowerCase() !== 'and');
+
+        for (const raw of parts) {
+            const cleaned = raw.replace(/^mr\.?\s+/i, '').trim();
+            if (!cleaned || cleaned.length < 3) continue;
+
+            if (IGNORE_PATTERNS.some(pattern => pattern.test(cleaned))) continue;
+
+            const lower = cleaned.toLowerCase();
+            const key = lower.includes('ubaid') ? 'ubaid-ghazi' : lower.includes('ismail') ? 'muhammad-ismail' : lower.replace(/[^a-z0-9]/g, '');
+
+            if (resolved.has(key)) continue;
+
+            const mentorEntry = Object.entries(KNOWN_MENTORS).find(([mKey]) => lower.includes(mKey));
+            if (mentorEntry) {
+                resolved.set(key, mentorEntry[1]);
+                continue;
+            }
+
+            const memberMatch = members.find(m => {
+                const mLower = m.name.toLowerCase();
+                if (lower.includes('ubaid') && mLower.includes('ubaid')) return true;
+                if (lower.includes('ismail') && mLower.includes('ismail')) return true;
+                return mLower.includes(lower) || lower.includes(mLower);
+            });
+
+            if (memberMatch) {
+                resolved.set(key, {
+                    name: memberMatch.name,
+                    role: memberMatch.tagline || (memberMatch.role === 'admin' ? 'Faculty Head' : memberMatch.role === 'core' ? 'Core Lead' : 'Speaker'),
+                    organization: 'GDGoC CUI Wah',
+                    imageUrl: memberMatch.imageUrl || '/images/team/ubaid.png',
+                    linkedin: memberMatch.linkedin || 'https://linkedin.com'
+                });
+                continue;
+            }
+
+            resolved.set(key, {
+                name: cleaned,
+                role: 'Speaker',
+                organization: 'GDGoC CUI Wah',
+                imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(cleaned)}&background=4285f4&color=fff&size=256`,
+                linkedin: 'https://linkedin.com'
+            });
+        }
+    }
+
+    const speakerList = Array.from(resolved.values());
+
+    if (speakerList.length === 0) {
+        return [{
+            name: 'Ubaid Ghazi',
+            role: 'GDG on Campus Lead',
+            organization: 'GDGoC CUI Wah',
+            imageUrl: '/images/team/ubaid.png',
+            linkedin: 'https://linkedin.com'
+        }];
+    }
+
+    return speakerList;
+}
+
 export default async function EventDetailPage({
     params,
 }: {
@@ -35,6 +179,26 @@ export default async function EventDetailPage({
 }) {
     const { slug } = await params;
     const event = await getEvent(slug);
+
+    let members: any[] = [];
+    try {
+        members = await prisma.member.findMany({
+            where: { isActive: true },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                role: true,
+                tagline: true,
+                imageUrl: true,
+                linkedin: true,
+            },
+        });
+    } catch (e) {
+        console.warn('Could not load members for event host resolution:', e);
+    }
+
+    const speakers = resolveEventSpeakers(event.agendaItems, members, slug);
 
     const startDate = new Date(event.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours duration by default
@@ -73,12 +237,13 @@ export default async function EventDetailPage({
 
                 .banner-container {
                     background-color: #0d1b2a;
-                    border-radius: 8px;
+                    border-radius: 12px;
                     overflow: hidden;
                     position: relative;
                     width: 100%;
                     max-width: 1140px;
-                    aspect-ratio: 1140 / 285;
+                    aspect-ratio: 16 / 9;
+                    max-height: 460px;
                     margin: 0 auto 32px auto;
                 }
 
@@ -118,9 +283,9 @@ export default async function EventDetailPage({
 
                 @media (max-width: 768px) {
                     .content-grid { grid-template-columns: 1fr; }
-                    .banner-container { aspect-ratio: auto; height: 180px; padding: 0 24px; }
+                    .banner-container { width: 100%; aspect-ratio: 16 / 9; height: auto; max-height: 280px; padding: 0; border-radius: 10px; margin-bottom: 20px; }
                     .banner-graphic { display: none; }
-                    .event-main-title { font-size: 28px; }
+                    .event-main-title { font-size: 26px; }
                 }
             `}</style>
 
@@ -209,37 +374,25 @@ export default async function EventDetailPage({
                         </div>
                     </section>
 
-                    {/* Hosts Section (Mock or Speaker based) */}
+                    {/* Hosts Section */}
                     <section className="hosts-section">
                         <h2 className="section-center-title">Event Speakers & Hosts</h2>
                         <div className="hosts-flex">
-                            {event.agendaItems.filter(a => a.speaker).map((item, idx) => (
+                            {speakers.map((host, idx) => (
                                 <div className="host-card" key={idx}>
                                     <div className="avatar-wrapper">
-                                        <img src={`https://ui-avatars.com/api/?name=${item.speaker}&background=${['4285f4', '34a853', 'FBBC05', 'EA4335'][idx % 4]}&color=fff&size=256`} className="host-avatar" alt={item.speaker || "Speaker"} />
-                                        <div className="host-social-badge">
-                                            <Linkedin size={12} color="#0a66c2" />
-                                        </div>
+                                        <img src={host.imageUrl} className="host-avatar" alt={host.name} />
+                                        {host.linkedin && (
+                                            <a href={host.linkedin} target="_blank" rel="noopener noreferrer" className="host-social-badge" aria-label={`${host.name} LinkedIn`}>
+                                                <Linkedin size={12} color="#0a66c2" />
+                                            </a>
+                                        )}
                                     </div>
-                                    <h4 className="host-name">{item.speaker}</h4>
-                                    <p className="host-org">Speaker</p>
-                                    <p className="host-role">{item.title}</p>
+                                    <h4 className="host-name">{host.name}</h4>
+                                    <p className="host-org">{host.organization}</p>
+                                    <p className="host-role">{host.role}</p>
                                 </div>
                             ))}
-                            {/* Fallback Lead if no speakers */}
-                            {event.agendaItems.filter(a => a.speaker).length === 0 && (
-                                <div className="host-card">
-                                    <div className="avatar-wrapper">
-                                        <img src="https://ui-avatars.com/api/?name=Ubaid+Ghazi&background=4285f4&color=fff&size=256" className="host-avatar" alt="Ubaid Ghazi" />
-                                        <div className="host-social-badge">
-                                            <Linkedin size={12} color="#0a66c2" />
-                                        </div>
-                                    </div>
-                                    <h4 className="host-name">Ubaid Ghazi</h4>
-                                    <p className="host-org">GDGoC CUI Wah</p>
-                                    <p className="host-role">GDG on Campus Lead</p>
-                                </div>
-                            )}
                         </div>
                     </section>
                 </article>

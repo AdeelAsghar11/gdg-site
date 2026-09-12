@@ -160,11 +160,6 @@ export default async function ResourcesPage() {
           border-radius: 50%;
         }
 
-        @media (max-width: 768px) {
-          .hero { padding: 6rem 1.5rem 4rem 1.5rem; }
-          .hero-title { font-size: 2.5rem; }
-        }
-
         .container {
           max-width: 1100px;
           margin: 0 auto;
@@ -189,10 +184,6 @@ export default async function ResourcesPage() {
           position: relative;
         }
 
-        @media (max-width: 850px) {
-          .path-row { grid-template-columns: 1fr; gap: 1.5rem; }
-        }
-
         .path-meta {
           position: sticky;
           top: 2rem;
@@ -215,10 +206,6 @@ export default async function ResourcesPage() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 2.5rem;
-        }
-
-        @media (max-width: 600px) {
-          .path-steps { grid-template-columns: 1fr; }
         }
 
         .step-item { position: relative; }
@@ -279,8 +266,6 @@ export default async function ResourcesPage() {
           gap: 4rem;
         }
 
-        @media (max-width: 850px) { .toolbox-layout { grid-template-columns: 1fr; } }
-
         .tool-group h4 {
           font-size: 1.25rem;
           margin-bottom: 1.5rem;
@@ -332,10 +317,6 @@ export default async function ResourcesPage() {
           align-items: center;
         }
 
-        @media (max-width: 850px) {
-          .footer-content { flex-direction: column; align-items: flex-start; gap: 2rem; }
-        }
-
         .cta-text {
           font-size: 3rem;
           line-height: 1.1;
@@ -358,6 +339,102 @@ export default async function ResourcesPage() {
         .cta-btn:hover {
           transform: scale(1.05);
           background: #f8f9fa;
+        }
+
+        /* ── Responsive Breakpoints ── */
+        @media (max-width: 850px) {
+          :root {
+            --section-gap: 5rem;
+          }
+          .hero {
+            padding: 6rem 1.25rem 3rem 1.25rem;
+          }
+          .container {
+            padding: 0 1.25rem;
+          }
+          .section-header {
+            margin: 3.5rem 0 2rem;
+            padding-bottom: 1.25rem;
+          }
+          .section-title {
+            font-size: 2.2rem;
+          }
+          .path-row {
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+            margin-bottom: 4rem;
+          }
+          .path-meta {
+            position: static;
+            top: auto;
+            height: auto;
+          }
+          .path-title {
+            font-size: 1.75rem;
+          }
+          .toolbox-layout {
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+          }
+          .footer-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2rem;
+          }
+          .cta-text {
+            font-size: 2.25rem;
+          }
+        }
+
+        @media (max-width: 600px) {
+          :root {
+            --section-gap: 4rem;
+          }
+          .hero {
+            padding: 5.5rem 1rem 2.5rem 1rem;
+          }
+          .hero-title {
+            font-size: 2.1rem;
+          }
+          .hero-subtitle {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+          }
+          .hero-meta {
+            gap: 10px;
+          }
+          .meta-item {
+            font-size: 0.8rem;
+            padding: 5px 12px;
+          }
+          .container {
+            padding: 0 1rem;
+          }
+          .section-header {
+            margin: 2.5rem 0 1.5rem;
+          }
+          .section-title {
+            font-size: 1.8rem;
+          }
+          .path-row {
+            margin-bottom: 3rem;
+            gap: 1.25rem;
+          }
+          .path-steps {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          .platform-list {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          .cta-text {
+            font-size: 1.85rem;
+          }
+          .cta-btn {
+            padding: 1rem 2rem;
+            font-size: 0.95rem;
+          }
         }
       `}</style>
 

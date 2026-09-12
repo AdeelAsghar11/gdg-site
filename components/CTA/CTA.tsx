@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import styles from './CTA.module.css';
@@ -61,17 +62,22 @@ const CTA = () => {
 
                     {/* Call to Action Buttons */}
                     <motion.div variants={itemVariants} className={styles.buttonGroup}>
-                        <motion.button
-                            className={styles.joinBtn}
-                            whileHover={{ y: -4 }}
-                        >
-                            Join Our Community
-                            <ExternalLink size={20} />
-                        </motion.button>
+                        <Link href="/join" style={{ textDecoration: 'none' }}>
+                            <motion.button
+                                className={styles.joinBtn}
+                                whileHover={{ y: -4 }}
+                                type="button"
+                            >
+                                Join Our Community
+                                <ExternalLink size={20} />
+                            </motion.button>
+                        </Link>
 
-                        <button className={styles.eventsBtn}>
-                            View Past Events
-                        </button>
+                        <Link href="/events" style={{ textDecoration: 'none' }}>
+                            <button type="button" className={styles.eventsBtn}>
+                                View Past Events
+                            </button>
+                        </Link>
                     </motion.div>
                 </motion.div>
             </div>

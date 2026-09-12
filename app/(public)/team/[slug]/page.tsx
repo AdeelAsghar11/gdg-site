@@ -153,10 +153,59 @@ export default async function MemberProfilePage({
                 .btn-primary:hover { filter: brightness(1.1); }
 
                 @media (max-width: 860px) {
-                  .hero-flex, .main-layout { grid-template-columns: 1fr; flex-direction: column; gap: 32px; }
-                  .hero-info { text-align: center; }
-                  .pfp-wrap { margin: 0 auto; }
-                  .sidebar { padding-top: 40px; border-top: 1px solid var(--border); }
+                  .container { padding: 0 20px; }
+                  .top-nav { padding: 24px 0 16px; }
+                  .hero { padding: 12px 0 36px; }
+                  .hero-flex { 
+                    flex-direction: column; 
+                    align-items: center; 
+                    text-align: center; 
+                    gap: 20px; 
+                    width: 100%; 
+                  }
+                  .pfp-wrap { 
+                    margin: 0 auto; 
+                    width: 130px; 
+                    height: 130px; 
+                  }
+                  .hero-info { 
+                    width: 100%; 
+                    text-align: center; 
+                    display: flex; 
+                    flex-direction: column; 
+                    align-items: center; 
+                    justify-content: center;
+                  }
+                  .role-header { 
+                    margin: 0 auto 8px; 
+                    text-align: center; 
+                    display: inline-block;
+                  }
+                  .m-name { 
+                    font-size: 32px; 
+                    line-height: 1.2; 
+                    margin: 0 0 10px; 
+                    text-align: center; 
+                    width: 100%; 
+                    word-break: break-word; 
+                  }
+                  .m-tagline { 
+                    font-size: 16px; 
+                    line-height: 1.5; 
+                    text-align: center; 
+                    width: 100%; 
+                    max-width: 480px; 
+                    margin: 0 auto; 
+                  }
+                  .main-layout { 
+                    grid-template-columns: 1fr; 
+                    gap: 36px; 
+                    padding: 36px 0; 
+                  }
+                  .sidebar { 
+                    padding-top: 36px; 
+                    border-top: 1px solid var(--border); 
+                  }
                 }
             `}</style>
 
@@ -173,7 +222,11 @@ export default async function MemberProfilePage({
                         <img src={member.imageUrl || '/images/placeholders/member.png'} alt={member.name} className="pfp-img" />
                     </div>
                     <div className="hero-info">
-                        <span className="role-header">{member.tier || member.role}</span>
+                        <span className="role-header">
+                            {member.tier === 'leadership' || member.slug === 'ubaid' || member.slug === 'kashif-ayub'
+                                ? 'LEADERSHIP'
+                                : 'CORE TEAM'}
+                        </span>
                         <h1 className="m-name">{member.name}</h1>
                         <p className="m-tagline">{member.tagline || `Technical chapter contributor at Google Developer Group on Campus, COMSATS Wah Campus.`}</p>
                     </div>

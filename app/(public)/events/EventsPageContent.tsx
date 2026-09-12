@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, Suspense, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trophy, Sparkles, Code, Calendar, MapPin, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { EventSummary } from '@/types/event';
@@ -10,17 +10,43 @@ import { EventFilters } from '@/components/Events/EventFilters';
 import { ActiveFilters } from '@/components/Events/ActiveFilters';
 import { Pagination } from '@/components/Events/Pagination';
 
+// Helper to determine if an event belongs to Hackathons vs Bootcamps
+function isHackathon(ev: EventSummary): boolean {
+  const type = (ev.type || '').toUpperCase();
+  const slug = (ev.slug || '').toLowerCase();
+  const title = (ev.title || '').toLowerCase();
+  const hasTag = ev.tags?.some(t => {
+    const tag = t.tag.toLowerCase();
+    return tag.includes('hackathon') || tag.includes('competition') || tag.includes('contest');
+  });
+
+  return (
+    type === 'HACKATHON' ||
+    type === 'COMPETITION' ||
+    hasTag ||
+    slug.includes('hackathon') ||
+    slug.includes('competition') ||
+    slug.includes('visio-spark') ||
+    slug.includes('algothon') ||
+    title.includes('hackathon') ||
+    title.includes('competition')
+  );
+}
+
 // ─── Event List Item ────────────────────────────────────────────────────────
 
-const EventListItem = ({ title, slug, date, location, tags, description, badgeUrl, imageUrl, _count }: EventSummary) => {
+const EventListItem = ({ title, slug, date, location, type, tags, description, badgeUrl, imageUrl, _count }: EventSummary) => {
   const dateObj = new Date(date);
   const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
   const year = dateObj.getFullYear();
+  const isHack = isHackathon({ title, slug, date, location, type, tags, description, badgeUrl, imageUrl, _count } as EventSummary);
+
+  const themeColor = isHack ? '#EA4335' : '#4285F4';
 
   return (
-    <div className="event-card animate-fade-in">
+    <div className="event-card animate-fade-in" style={{ borderLeft: `4px solid ${themeColor}` }}>
       <div className="event-badge-wrapper">
-        <div className="badge-outer">
+        <div className="badge-outer" style={{ borderColor: `${themeColor}20` }}>
           <img
             src={imageUrl || badgeUrl || "https://fonts.gstatic.com/s/i/productlogos/googleg_standard/v9/64.png"}
             alt={title}
@@ -35,12 +61,13 @@ const EventListItem = ({ title, slug, date, location, tags, description, badgeUr
         <div className="event-meta">
           <span className="meta-date">{formattedDate}, {year}</span>
           <span className="meta-sep">—</span>
-          <span className="meta-type">WORKSHOP / STUDY GROUP</span>
+          <span className="meta-type" style={{ color: themeColor, fontWeight: 700 }}>
+            {isHack ? '🏆 HACKATHON / COMPETITION' : '⚡ BOOTCAMP / WORKSHOP'}
+          </span>
           <span className="meta-sep">—</span>
           <span className="meta-loc">{location.toUpperCase()}</span>
           {dateObj < new Date() && (
-            <span style={{ 
-              marginLeft: 'auto', 
+            <span className="past-event-badge" style={{ 
               background: '#f8f9fa', 
               color: '#5f6368', 
               padding: '2px 10px', 
@@ -76,7 +103,7 @@ const EventListItem = ({ title, slug, date, location, tags, description, badgeUr
         )}
 
         <Link href={`/events/${slug}`}>
-          <button className="details-btn">View details</button>
+          <button className="details-btn" style={{ backgroundColor: themeColor }}>View details</button>
         </Link>
       </div>
     </div>
@@ -127,7 +154,6 @@ const CalendarView = ({ allEvents }: { allEvents: EventSummary[] }) => {
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const params = new URLSearchParams(searchParams.toString());
     if (selectedDate === dateStr) {
-      // toggle off if clicking same date
       params.delete('date');
     } else {
       params.set('date', dateStr);
@@ -220,25 +246,113 @@ const EventsPageContent = ({
 }) => {
   const searchParams = useSearchParams();
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [selectedSection, setSelectedSection] = useState<'all' | 'hackathons' | 'bootcamps'>('all');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => { setIsMounted(true); }, []);
 
+  const hackathons = events.filter(isHackathon);
+  const bootcamps = events.filter(e => !isHackathon(e));
+
   return (
     <div className="events-root">
+      <style>{`
+        .event-card {
+          background: white;
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+          border: 1px solid #f1f3f4;
+          border-left-width: 4px;
+        }
+
+        .category-switcher {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .cat-tab {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          border-radius: 100px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          border: 1px solid #dadce0;
+          background: white;
+          color: #5f6368;
+          transition: all 0.2s ease;
+        }
+
+        .cat-tab:hover {
+          border-color: #202124;
+          color: #202124;
+        }
+
+        .cat-tab.active-all {
+          background: #202124;
+          color: white;
+          border-color: #202124;
+        }
+
+        .cat-tab.active-hack {
+          background: #EA4335;
+          color: white;
+          border-color: #EA4335;
+        }
+
+        .cat-tab.active-boot {
+          background: #4285F4;
+          color: white;
+          border-color: #4285F4;
+        }
+
+        .past-event-badge {
+          margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+          .event-card {
+            padding: 16px !important;
+            border-radius: 14px !important;
+          }
+          .past-event-badge {
+            margin-left: 0;
+          }
+          .section-header-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 1rem;
+          }
+          .category-switcher {
+            gap: 8px;
+            margin-bottom: 1.25rem;
+          }
+          .cat-tab {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+          }
+        }
+      `}</style>
+
       {/* View switcher */}
       <nav className="view-switcher animate-fade-in">
         <div
           className={`view-tab ${viewMode === 'list' ? 'active' : ''}`}
           onClick={() => setViewMode('list')}
         >
-          List
+          List View
         </div>
         <div
           className={`view-tab ${viewMode === 'calendar' ? 'active' : ''}`}
           onClick={() => setViewMode('calendar')}
         >
-          Calendar
+          Calendar View
         </div>
       </nav>
 
@@ -256,6 +370,28 @@ const EventsPageContent = ({
       <Suspense fallback={null}>
         <ActiveFilters />
       </Suspense>
+
+      {/* Category Section Switcher Tabs */}
+      <div className="category-switcher animate-fade-in">
+        <button
+          className={`cat-tab ${selectedSection === 'all' ? 'active-all' : ''}`}
+          onClick={() => setSelectedSection('all')}
+        >
+          <Sparkles size={16} /> All Events ({events.length})
+        </button>
+        <button
+          className={`cat-tab ${selectedSection === 'hackathons' ? 'active-hack' : ''}`}
+          onClick={() => setSelectedSection('hackathons')}
+        >
+          <Trophy size={16} /> Hackathons & Competitions ({hackathons.length})
+        </button>
+        <button
+          className={`cat-tab ${selectedSection === 'bootcamps' ? 'active-boot' : ''}`}
+          onClick={() => setSelectedSection('bootcamps')}
+        >
+          <Code size={16} /> Bootcamps & Workshops ({bootcamps.length})
+        </button>
+      </div>
 
       {/* Calendar view */}
       {viewMode === 'calendar' && (
@@ -279,57 +415,81 @@ const EventsPageContent = ({
         </Suspense>
       )}
 
-      {/* List view */}
+      {/* List view with two dedicated sections: Hackathons & Bootcamps */}
       {viewMode === 'list' && (
         <div className="animate-fade-in">
-          {/* Result count */}
-          <p style={{ fontSize: '0.9rem', color: '#5F6368', marginBottom: 24 }}>
-            Showing {events.length} of {total} event{total !== 1 ? 's' : ''}
-          </p>
-
           <div className="event-list">
-            {(() => {
-              const now = new Date();
-              const upcoming = events.filter(e => new Date(e.date) >= now);
-              const past = events.filter(e => new Date(e.date) < now);
+            {/* ─── ALL EVENTS VIEW ─── */}
+            {selectedSection === 'all' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: 56 }}>
+                {events.map(ev => (
+                  <EventListItem key={ev.slug} {...ev} />
+                ))}
+              </div>
+            )}
 
-              return (
-                <>
-                  {upcoming.length > 0 && (
-                    <div className="section-group animate-fade-in" style={{ marginBottom: 48 }}>
-                      <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#202124', marginBottom: 32, borderLeft: '4px solid #34A853', paddingLeft: 16 }}>Upcoming Events</h2>
-                      {upcoming.map(ev => (
-                        <EventListItem key={ev.slug} {...ev} />
-                      ))}
-                    </div>
-                  )}
+            {/* ─── HACKATHONS SECTION ─── */}
+            {selectedSection === 'hackathons' && hackathons.length > 0 && (
+              <div className="section-group animate-fade-in" style={{ marginBottom: 56 }}>
+                <div className="section-header-banner" style={{ background: '#fce8e6', borderLeft: '4px solid #EA4335' }}>
+                  <div>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#c5221f', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Trophy size={22} color="#EA4335" /> Hackathons & Competitions
+                    </h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#5f6368' }}>
+                      High-stakes competitive innovation challenges, AI hackathons, and speed coding arenas
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c5221f', background: 'white', padding: '4px 12px', borderRadius: 100 }}>
+                    {hackathons.length} Events
+                  </span>
+                </div>
 
-                  {past.length > 0 && (
-                    <div className="section-group animate-fade-in">
-                      <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#5f6368', marginBottom: 32, borderLeft: '4px solid #dadce0', paddingLeft: 16 }}>Past Events</h2>
-                      <div style={{ opacity: 0.85 }}>
-                        {past.map(ev => (
-                          <EventListItem key={ev.slug} {...ev} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  {hackathons.map(ev => (
+                    <EventListItem key={ev.slug} {...ev} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-                  {events.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '100px 0', color: '#5f6368' }}>
-                      <p>No events found matching your filters.</p>
-                      <Link
-                        href="/events"
-                        className="details-btn"
-                        style={{ display: 'inline-block', marginTop: '1rem', textDecoration: 'none' }}
-                      >
-                        Clear all filters
-                      </Link>
-                    </div>
-                  )}
-                </>
-              );
-            })()}
+            {/* ─── BOOTCAMPS SECTION ─── */}
+            {selectedSection === 'bootcamps' && bootcamps.length > 0 && (
+              <div className="section-group animate-fade-in" style={{ marginBottom: 56 }}>
+                <div className="section-header-banner" style={{ background: '#e8f0fe', borderLeft: '4px solid #4285F4' }}>
+                  <div>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#174ea6', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Code size={22} color="#4285F4" /> Bootcamps & Workshops
+                    </h2>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: '#5f6368' }}>
+                      Intensive hands-on training series, developer codelabs, masterclasses, and chapter sessions
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#174ea6', background: 'white', padding: '4px 12px', borderRadius: 100 }}>
+                    {bootcamps.length} Events
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  {bootcamps.map(ev => (
+                    <EventListItem key={ev.slug} {...ev} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {events.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '100px 0', color: '#5f6368' }}>
+                <p>No events found matching your filters.</p>
+                <Link
+                  href="/events"
+                  className="details-btn"
+                  style={{ display: 'inline-block', marginTop: '1rem', textDecoration: 'none' }}
+                >
+                  Clear all filters
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Pagination */}

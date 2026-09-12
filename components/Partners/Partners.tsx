@@ -3,31 +3,78 @@ import Image from 'next/image';
 import styles from './Partners.module.css';
 import { prisma } from '@/lib/prisma';
 
+const DEFAULT_PARTNERS = [
+    {
+        id: 'partner-1',
+        name: 'GitHub',
+        logoUrl: '/partners/github.png',
+        websiteUrl: 'https://github.com/',
+    },
+    {
+        id: 'partner-2',
+        name: 'Algoligence',
+        logoUrl: '/partners/algoligence.svg',
+        websiteUrl: 'https://algoligence.com/',
+    },
+    {
+        id: 'partner-3',
+        name: 'DataCamp',
+        logoUrl: '/partners/datacamp.png',
+        websiteUrl: 'https://www.datacamp.com/',
+    },
+    {
+        id: 'partner-4',
+        name: 'KSL',
+        logoUrl: '/partners/ksl.svg',
+        websiteUrl: 'https://kslt20.com/',
+    },
+    {
+        id: 'partner-5',
+        name: 'Cheezious',
+        logoUrl: '/partners/cheezious.svg',
+        websiteUrl: 'https://cheezious.com/',
+    },
+    {
+        id: 'partner-6',
+        name: 'Korneez',
+        logoUrl: '/partners/korneez.svg',
+        websiteUrl: 'https://korneez.com/',
+    },
+];
+
 async function getPartners() {
     try {
-        return await prisma.partner.findMany({
+        const dbPartners = await prisma.partner.findMany({
             orderBy: { order: 'asc' },
         });
+        if (dbPartners && dbPartners.length > 0) {
+            return dbPartners;
+        }
     } catch (error) {
-        console.warn('⚠️ Could not fetch partners during build.');
-        return []
+        console.warn('⚠️ Could not fetch partners, using fallback partner logos.');
     }
+    return DEFAULT_PARTNERS;
 }
 
 export default async function Partners() {
-    const partners = await getPartners();
+    const rawPartners = await getPartners();
+    const partners = rawPartners.length > 0 ? rawPartners : DEFAULT_PARTNERS;
 
     return (
-        <section className={styles.partners}>
-            <div className="container">
-                <div className={styles.header}>
-                    <span className="subheader">Collaborators</span>
-                    <h2>Our Partners</h2>
-                </div>
+        <section className={styles.partnersSection} data-aos="fade-up">
+            <div className={styles.container}>
+                <h2 className={styles.title}>Partners</h2>
 
                 <div className={styles.logoGrid}>
                     {partners.map((partner) => (
-                        <div key={partner.id} className={`${styles.logoItem} ${partner.name === 'GitHub' ? styles.githubLogo : ''}`}>
+                        <a
+                            key={partner.id}
+                            href={partner.websiteUrl || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.partnerCard}
+                            title={partner.name}
+                        >
                             <div className={styles.logoWrapper}>
                                 {partner.logoUrl ? (
                                     <Image
@@ -35,17 +82,14 @@ export default async function Partners() {
                                         alt={partner.name}
                                         fill
                                         className={styles.logoImage}
-                                        sizes="(max-width: 768px) 150px, 200px"
+                                        sizes="(max-width: 768px) 240px, 320px"
                                     />
                                 ) : (
                                     <div className={styles.placeholder}>{partner.name}</div>
                                 )}
                             </div>
-                        </div>
+                        </a>
                     ))}
-                    {partners.length === 0 && (
-                        <p style={{ gridColumn: '1 / -1', textAlign: 'center', opacity: 0.5 }}>Community partners coming soon.</p>
-                    )}
                 </div>
             </div>
         </section>

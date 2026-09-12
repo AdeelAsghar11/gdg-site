@@ -15,6 +15,7 @@ const DOMAINS = [
   'Web & App Development',
   'Data Science & ML',
   'Generative AI',
+  'Vibe Coding',
   'UI/UX & Design',
   'Content & Social Media',
   'Events & Logistics',
@@ -23,6 +24,7 @@ const DOMAINS = [
 type FormData = {
   name: string
   email: string
+  phone?: string
   studentId: string
   department: string
   domains: string[]
@@ -31,11 +33,23 @@ type FormData = {
 
 type SubmitResult = { success: boolean; id: string }
 
-export function ApplicationForm({ deadline }: { deadline: string | null }) {
+export function ApplicationForm({
+  deadline,
+  eligibility = '1st & 2nd Semester Students',
+  interviewDate = '15 Sep 2026',
+}: {
+  deadline: string | null
+  eligibility?: string | null
+  interviewDate?: string | null
+}) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [studentId, setStudentId] = useState('')
   const [department, setDepartment] = useState('')
+  const [semester, setSemester] = useState<'1st Semester' | '2nd Semester'>('1st Semester')
+  const [isSemesterConfirmed, setIsSemesterConfirmed] = useState(false)
+  const [membershipType, setMembershipType] = useState<'member' | 'core'>('member')
   const [domains, setDomains] = useState<string[]>([])
   const [statement, setStatement] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -65,8 +79,14 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
     const errors: Record<string, string> = {}
     if (!name.trim() || name.trim().length < 2) errors.name = 'Full name is required (min 2 chars).'
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) errors.email = 'A valid email address is required.'
+    if (!phone.trim() || phone.trim().length < 10) {
+      errors.phone = 'A valid phone/WhatsApp number is required (min 10 digits).'
+    }
     if (!department) errors.department = 'Please select a department.'
-    if (domains.length === 0) errors.domains = 'Select at least one domain.'
+    if (!isSemesterConfirmed) {
+      errors.confirmed = 'You must confirm that you are currently an active 1st or 2nd Semester student to apply.'
+    }
+    if (domains.length === 0) errors.domains = 'Select at least one club/domain interest.'
     if (statement.trim().length < 50)
       errors.statement = `Statement too short (${statement.trim().length}/50 min chars).`
     setFieldErrors(errors)
@@ -76,7 +96,8 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
-    submit({ name: name.trim(), email: email.trim(), studentId, department, domains, statement })
+    const formattedStatement = `[Applicant Status: ${semester} Student | Contact: ${phone.trim()} | Track: ${membershipType === 'core' ? 'Core Team Leadership' : 'General Club Member'}]\n\n${statement.trim()}`
+    submit({ name: name.trim(), email: email.trim(), phone: phone.trim(), studentId, department, domains, statement: formattedStatement })
   }
 
   // ── Success state ──
@@ -86,13 +107,32 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
         <div className="af-success-icon">🎉</div>
         <h2>Application Submitted!</h2>
         <p>
-          Thank you, <strong>{name}</strong>. We have received your application
-          and will be in touch via email.
+          Thank you, <strong>{name}</strong>! We have received your application for the 1st &amp; 2nd Semester Recruitment Drive.
         </p>
+        <div style={{
+          background: '#e6f4ea',
+          border: '1px solid #ceead6',
+          borderRadius: 12,
+          padding: '14px 18px',
+          maxWidth: 480,
+          margin: '1rem auto 1.5rem',
+          textAlign: 'left',
+          fontSize: '0.9rem',
+          color: '#137333',
+          lineHeight: 1.5,
+        }}>
+          <strong>🗓️ What happens next:</strong>
+          <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+            <li><strong>Interviews:</strong> Scheduled for <strong>{interviewDate || '15 Sep 2026'}</strong>.</li>
+            <li>Shortlisted 1st &amp; 2nd semester applicants will receive interview time slots and room allocations via email (<code>{email}</code>).</li>
+          </ul>
+        </div>
         <p className="af-ref">
           Reference ID: <code>{successData.id}</code>
         </p>
-        <a href="/" className="af-home-btn">Return to Homepage →</a>
+        <div>
+          <a href="/" className="af-home-btn">Return to Homepage →</a>
+        </div>
       </div>
     )
   }
@@ -308,22 +348,8 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
           </div>
         </div>
 
-        {/* Student ID + Department */}
+        {/* Department + Current Semester */}
         <div className="af-two-col">
-          <div className="af-field">
-            <label className="af-label" htmlFor="af-sid">
-              Student ID <span className="af-opt">(optional)</span>
-            </label>
-            <input
-              id="af-sid"
-              className="af-input"
-              type="text"
-              placeholder="FA22-BCE-001"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-            />
-          </div>
-
           <div className="af-field">
             <label className="af-label" htmlFor="af-dept">
               Department <span className="af-req">*</span>
@@ -341,14 +367,129 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
             </select>
             {fieldErrors.department && <p className="af-field-error">⚠ {fieldErrors.department}</p>}
           </div>
+
+          <div className="af-field">
+            <label className="af-label">
+              Academic Semester <span className="af-req">*</span>
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => setSemester('1st Semester')}
+                className={`af-pill ${semester === '1st Semester' ? 'af-pill-on' : 'af-pill-off'}`}
+                style={{ textAlign: 'center', width: '100%', borderRadius: 10, padding: '11px 12px', fontSize: '0.88rem' }}
+              >
+                🎓 1st Semester
+              </button>
+              <button
+                type="button"
+                onClick={() => setSemester('2nd Semester')}
+                className={`af-pill ${semester === '2nd Semester' ? 'af-pill-on' : 'af-pill-off'}`}
+                style={{ textAlign: 'center', width: '100%', borderRadius: 10, padding: '11px 12px', fontSize: '0.88rem' }}
+              >
+                🎓 2nd Semester
+              </button>
+            </div>
+            <p style={{ margin: '6px 0 0', fontSize: '0.75rem', color: '#5f6368' }}>
+              Registration open 11–14 Sep for both 1st and 2nd semester students.
+            </p>
+          </div>
+        </div>
+
+        {/* Phone Number + Student ID */}
+        <div className="af-two-col">
+          <div className="af-field">
+            <label className="af-label" htmlFor="af-phone">
+              Phone / WhatsApp Number <span className="af-req">*</span>
+            </label>
+            <input
+              id="af-phone"
+              className={`af-input${fieldErrors.phone ? ' af-error-field' : ''}`}
+              type="tel"
+              placeholder="0300-1234567"
+              value={phone}
+              onChange={(e) => { setPhone(e.target.value); setFieldErrors((v) => ({ ...v, phone: '' })) }}
+              autoComplete="tel"
+            />
+            {fieldErrors.phone && <p className="af-field-error">⚠ {fieldErrors.phone}</p>}
+          </div>
+
+          <div className="af-field">
+            <label className="af-label" htmlFor="af-sid">
+              Student ID / Roll No. <span className="af-opt">(optional, e.g. FA26-BCS-001)</span>
+            </label>
+            <input
+              id="af-sid"
+              className="af-input"
+              type="text"
+              placeholder="FA26-BCS-042"
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Application Track */}
+        <div className="af-field">
+          <label className="af-label">
+            Application Track <span className="af-req">*</span>
+            <span className="af-opt" style={{ display: 'block', fontSize: '0.78rem', marginTop: 4, textTransform: 'none', letterSpacing: 0 }}>
+              Choose whether you are joining as a general community/club member or applying for a core team role:
+            </span>
+          </label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 6 }}>
+            <div
+              onClick={() => setMembershipType('member')}
+              style={{
+                border: membershipType === 'member' ? '2px solid #4285F4' : '1.5px solid #e0e0e0',
+                background: membershipType === 'member' ? '#E8F0FE' : '#fafafa',
+                borderRadius: 12,
+                padding: '14px 16px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: '1.2rem' }}>🎓</span>
+                <strong style={{ fontSize: '0.95rem', color: membershipType === 'member' ? '#185FA5' : '#202124' }}>
+                  General Member
+                </strong>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: '#5F6368', lineHeight: 1.4 }}>
+                Participate in clubs, attend hands-on workshops, receive Member ID, and collaborate on projects.
+              </p>
+            </div>
+
+            <div
+              onClick={() => setMembershipType('core')}
+              style={{
+                border: membershipType === 'core' ? '2px solid #EA4335' : '1.5px solid #e0e0e0',
+                background: membershipType === 'core' ? '#FCE8E6' : '#fafafa',
+                borderRadius: 12,
+                padding: '14px 16px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: '1.2rem' }}>⚡</span>
+                <strong style={{ fontSize: '0.95rem', color: membershipType === 'core' ? '#C5221F' : '#202124' }}>
+                  Core Team Candidate
+                </strong>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: '#5F6368', lineHeight: 1.4 }}>
+                Help organize events, manage technical clubs, coordinate logistics, and lead student initiatives.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Preferred Club / Domain */}
         <div className="af-field">
           <label className="af-label">
-            Preferred Club / Domain <span className="af-req">*</span>
+            Technical & Creative Club Preferences <span className="af-req">*</span>
             <span className="af-opt" style={{ display: 'block', fontSize: '0.78rem', marginTop: 4, textTransform: 'none', letterSpacing: 0 }}>
-              Select your area of interest. Your club will be assigned based on this preference and your interview.
+              Select your domain interests. Your club assignment will be based on these preferences:
             </span>
           </label>
           <div className={`af-domains-row${fieldErrors.domains ? ' af-error-field' : ''}`}
@@ -379,7 +520,7 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
           <textarea
             id="af-statement"
             className={`af-textarea af-input${fieldErrors.statement ? ' af-error-field' : ''}`}
-            placeholder="Tell us about yourself, your goals, and what you'd bring to the chapter… (min 50 characters)"
+            placeholder="Tell us about your interests, what you hope to learn or build, and why you want to be part of the community… (min 50 characters)"
             value={statement}
             onChange={(e) => {
               if (e.target.value.length <= 1000) setStatement(e.target.value)
@@ -393,9 +534,47 @@ export function ApplicationForm({ deadline }: { deadline: string | null }) {
           {fieldErrors.statement && <p className="af-field-error">⚠ {fieldErrors.statement}</p>}
         </div>
 
+        {/* Semester Eligibility Verification */}
+        <div style={{
+          background: isSemesterConfirmed ? '#e6f4ea' : (fieldErrors.confirmed ? '#fce8e6' : '#f8f9fa'),
+          border: isSemesterConfirmed ? '1.5px solid #34a853' : (fieldErrors.confirmed ? '1.5px solid #ea4335' : '1.5px solid #dadce0'),
+          borderRadius: 12,
+          padding: '16px 18px',
+          marginBottom: '1.5rem',
+          transition: 'all 0.2s ease',
+        }}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              id="af-sem-confirm"
+              checked={isSemesterConfirmed}
+              onChange={(e) => {
+                setIsSemesterConfirmed(e.target.checked)
+                if (e.target.checked && fieldErrors.confirmed) {
+                  setFieldErrors((v) => ({ ...v, confirmed: '' }))
+                }
+              }}
+              style={{ width: 18, height: 18, marginTop: 2, accentColor: '#34A853', cursor: 'pointer' }}
+            />
+            <div style={{ fontSize: '0.9rem', color: '#202124', lineHeight: 1.45 }}>
+              <strong style={{ color: '#137333' }}>
+                I confirm that I am currently an active {semester} student at CUI Wah.
+              </strong>
+              <div style={{ fontSize: '0.8rem', color: '#5f6368', marginTop: 4 }}>
+                This drive is open from <strong>11 Sep to 14 Sep</strong>, with interviews scheduled on <strong>15 Sep 2026</strong>. Both 1st and 2nd semester students are welcome to apply.
+              </div>
+            </div>
+          </label>
+          {fieldErrors.confirmed && (
+            <p className="af-field-error" style={{ marginTop: 8, color: '#ea4335', fontWeight: 600 }}>
+              ⚠ {fieldErrors.confirmed}
+            </p>
+          )}
+        </div>
+
         {/* Submit */}
         <button type="submit" className="af-submit" disabled={isLoading}>
-          {isLoading ? 'Submitting…' : '🚀 Submit Application'}
+          {isLoading ? 'Submitting Application…' : '🚀 Submit Application (1st & 2nd Semester)'}
         </button>
       </form>
     </>

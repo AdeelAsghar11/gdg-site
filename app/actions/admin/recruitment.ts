@@ -31,10 +31,11 @@ import { createId } from '@paralleldrive/cuid2'
 
 const DOMAIN_TO_CLUB_NAME: Record<string, string> = {
   'Web & App Development':    'Web & App Development',
-  'Data Science & ML':        'Data Science & ML',
-  'Generative AI':            'Generative AI',
-  'UI/UX & Design':           'UI/UX & Design',
-  'Content & Social Media':   'Content & Social Media',
+  'Data Science & ML':        'Data Science',
+  'Generative AI':            'Generative AI & ML',
+  'Vibe Coding':              'Vibe Coding',
+  'UI/UX & Design':           'Creative',
+  'Content & Social Media':   'Growth & Impact',
   'Events & Logistics':       'Events & Logistics',
 }
 

@@ -2,8 +2,10 @@
 
 import React, { useState, useTransition, useActionState, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
-import { Trash2, Plus } from 'lucide-react'
-import { updateProfile, addSkill, removeSkill, addContribution, removeContribution } from '@/app/actions/profile'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Trash2, Plus, Camera, Loader2, ArrowLeft } from 'lucide-react'
+import { updateProfile, addSkill, removeSkill, addContribution, removeContribution, uploadAvatar, removeAvatar } from '@/app/actions/profile'
 
 interface EditTabProps {
   member: any
@@ -14,7 +16,7 @@ function SectionHeader({ title }: { title: string }) {
   return (
     <h3 style={{
       fontSize: '1.1rem', fontWeight: 800, marginBottom: 20,
-      marginTop: 40, paddingBottom: 10, borderBottom: '1px solid #f0f0f0',
+      marginTop: 36, paddingBottom: 10, borderBottom: '1px solid #f0f0f0',
       color: '#202124', textTransform: 'uppercase', letterSpacing: '.04em'
     }}>
       {title}
@@ -42,9 +44,14 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function EditTab({ member, role }: EditTabProps) {
+  const router = useRouter()
   const [result, dispatch, isPendingAction] = useActionState(updateProfile, undefined)
   const [isPending, startTransition] = useTransition()
   
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(member.imageUrl || null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [photoFeedback, setPhotoFeedback] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+
   const [newSkill, setNewSkill] = useState('')
   const [contriTitle, setContriTitle] = useState('')
   const [contriDesc, setContriDesc] = useState('')
@@ -60,6 +67,64 @@ export default function EditTab({ member, role }: EditTabProps) {
       return () => clearTimeout(timer)
     }
   }, [result])
+
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setPhotoFeedback({ type: 'error', text: 'Please choose an image file (PNG, JPG, or WEBP).' })
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setPhotoFeedback({ type: 'error', text: 'Image file must be under 5MB.' })
+      return
+    }
+
+    setIsUploadingPhoto(true)
+    setPhotoFeedback(null)
+
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    try {
+      const res = await uploadAvatar(formData)
+      if (res.error) {
+        setPhotoFeedback({ type: 'error', text: res.error })
+      } else if (res.url) {
+        setAvatarUrl(res.url)
+        setPhotoFeedback({ type: 'success', text: 'Profile picture updated successfully!' })
+        router.refresh()
+        setTimeout(() => setPhotoFeedback(null), 4000)
+      }
+    } catch {
+      setPhotoFeedback({ type: 'error', text: 'Failed to upload photo. Please try again.' })
+    } finally {
+      setIsUploadingPhoto(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleRemovePhoto = async () => {
+    if (!confirm('Are you sure you want to remove your profile picture?')) return
+    setIsUploadingPhoto(true)
+    setPhotoFeedback(null)
+    try {
+      const res = await removeAvatar()
+      if (res?.error) {
+        setPhotoFeedback({ type: 'error', text: res.error })
+      } else {
+        setAvatarUrl(null)
+        setPhotoFeedback({ type: 'success', text: 'Profile picture removed.' })
+        router.refresh()
+        setTimeout(() => setPhotoFeedback(null), 4000)
+      }
+    } catch {
+      setPhotoFeedback({ type: 'error', text: 'Failed to remove picture.' })
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
 
   const handleAddSkill = async () => {
     if (!newSkill.trim()) return
@@ -93,12 +158,152 @@ export default function EditTab({ member, role }: EditTabProps) {
 
   return (
     <div style={{ maxWidth: 640 }}>
+      <div style={{ marginBottom: 16 }}>
+        <Link href="/dashboard/profile" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          color: '#185FA5', fontSize: '0.875rem', fontWeight: 600,
+          textDecoration: 'none'
+        }}>
+          <ArrowLeft size={16} /> Back to Profile
+        </Link>
+      </div>
+
       <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 8, color: '#202124' }}>
         Edit Profile
       </h2>
-      <p style={{ color: '#5F6368', marginBottom: 24, fontSize: '0.9rem' }}>
-        Keep your information up to date to help other members find you.
+      <p style={{ color: '#5F6368', marginBottom: 20, fontSize: '0.9rem' }}>
+        Keep your information up to date to help other members and leadership find you.
       </p>
+
+      {/* Section 0: Profile Picture */}
+      <SectionHeader title="Profile Picture" />
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 24,
+        padding: '20px 24px',
+        background: '#f8f9fa',
+        border: '1px solid #e8eaed',
+        borderRadius: 14,
+        marginBottom: 20,
+        flexWrap: 'wrap'
+      }}>
+        <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={member.name}
+              style={{
+                width: 92,
+                height: 92,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '3px solid #fff',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
+              }}
+            />
+          ) : (
+            <div style={{
+              width: 92,
+              height: 92,
+              borderRadius: '50%',
+              background: '#E8F0FE',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: '2rem',
+              color: '#185FA5',
+              border: '3px solid #fff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
+            }}>
+              {member.name.charAt(0)}
+            </div>
+          )}
+          {isUploadingPhoto && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.75)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Loader2 size={24} color="#4285F4" style={{ animation: 'spin 1s linear infinite' }} />
+            </div>
+          )}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <label style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: '#4285F4',
+              color: '#fff',
+              padding: '10px 18px',
+              borderRadius: 8,
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: isUploadingPhoto ? 'not-allowed' : 'pointer',
+              opacity: isUploadingPhoto ? 0.7 : 1,
+              transition: 'background 0.2s',
+            }}>
+              <Camera size={16} />
+              {isUploadingPhoto ? 'Uploading...' : 'Choose Photo'}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/jpg"
+                onChange={handlePhotoSelect}
+                disabled={isUploadingPhoto}
+                style={{ display: 'none' }}
+              />
+            </label>
+
+            {avatarUrl && (
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                disabled={isUploadingPhoto}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: '#fff',
+                  color: '#EA4335',
+                  border: '1px solid #dadce0',
+                  padding: '9px 16px',
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: isUploadingPhoto ? 'not-allowed' : 'pointer'
+                }}
+              >
+                <Trash2 size={15} />
+                Remove
+              </button>
+            )}
+          </div>
+
+          <p style={{ margin: '8px 0 0', fontSize: '0.78rem', color: '#5F6368' }}>
+            JPG, PNG, or WEBP up to 5MB. Square photo recommended.
+          </p>
+
+          {photoFeedback && (
+            <p style={{
+              margin: '8px 0 0',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: photoFeedback.type === 'error' ? '#EA4335' : '#34A853'
+            }}>
+              {photoFeedback.type === 'error' ? '⚠ ' : '✓ '}
+              {photoFeedback.text}
+            </p>
+          )}
+        </div>
+      </div>
 
       <form action={dispatch}>
         {/* Section 1: Basic Info */}

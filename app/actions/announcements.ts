@@ -38,6 +38,7 @@ export async function createAnnouncement(
     data: { ...parsed.data, isActive: true },
   })
 
+  revalidatePath('/')
   revalidatePath('/core/announcements')
   revalidatePath('/dashboard')
   return undefined
@@ -57,6 +58,7 @@ export async function toggleAnnouncement(id: string) {
     data:  { isActive: !a.isActive },
   })
 
+  revalidatePath('/')
   revalidatePath('/core/announcements')
   revalidatePath('/dashboard')
 }
@@ -66,6 +68,7 @@ export async function deleteAnnouncement(id: string) {
   if (!session?.user || !isCoreOrAdmin(session.user.role)) return
 
   await prisma.announcement.delete({ where: { id } })
+  revalidatePath('/')
   revalidatePath('/core/announcements')
   revalidatePath('/dashboard')
 }

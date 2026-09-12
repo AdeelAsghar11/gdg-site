@@ -25,23 +25,25 @@ export default function IDCardTab({ member }: IDCardTabProps) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, width: '100%' }}>
       {/* ID Card card */}
       <div id="id-card-print" style={{ 
-        width: '400px', 
-        height: '240px', 
+        width: '100%',
+        maxWidth: '400px', 
+        minHeight: '230px', 
         background: '#fff', 
         borderRadius: 20, 
-        padding: '28px',
+        padding: '24px',
         position: 'relative',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+        boxShadow: '0 12px 32px rgba(0,0,0,0.08)',
         overflow: 'hidden',
         border: '1px solid #e8eaed',
-        fontFamily: "'Google Sans', sans-serif"
+        fontFamily: "'Google Sans', sans-serif",
+        boxSizing: 'border-box'
       }}>
         <div style={{ position: 'absolute', top: 0, right: 0, width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(66, 133, 244, 0.05) 0%, transparent 70%)', zIndex: 0 }}></div>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#202124' }}>GDG<span style={{ color: '#4285F4' }}>oC</span></span>
             <span style={{ fontSize: '0.8rem', color: '#5F6368', fontWeight: 500 }}>Wah</span>
@@ -54,27 +56,27 @@ export default function IDCardTab({ member }: IDCardTabProps) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          <div style={{ width: 88, height: 88, borderRadius: 16, overflow: 'hidden', background: '#f1f3f4', border: '1px solid #e8eaed' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: 76, height: 76, borderRadius: 16, overflow: 'hidden', background: '#f1f3f4', border: '1px solid #e8eaed', flexShrink: 0 }}>
             {member.imageUrl ? (
               <img src={member.imageUrl} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#1a73e8', fontSize: '1.75rem' }}>
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#1a73e8', fontSize: '1.5rem' }}>
                 {getInitials(member.name)}
               </div>
             )}
           </div>
-          <div>
-             <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: '#202124' }}>{member.name}</h3>
+          <div style={{ minWidth: 0, flex: 1 }}>
+             <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#202124', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.name}</h3>
              <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#1a73e8', letterSpacing: '.05em' }}>{member.role}</span>
-             <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#5F6368' }}>{member.department || 'Member'}</p>
+             <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#5F6368', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{member.department || 'Member'}</p>
           </div>
         </div>
 
-        <div style={{ marginTop: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 1 }}>
+        <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 1 }}>
            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#5F6368', textTransform: 'uppercase', letterSpacing: '.08em' }}>Member ID</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace', color: '#202124' }}>{memberId}</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace', color: '#202124' }}>{memberId}</span>
            </div>
            <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
               <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#5F6368', textTransform: 'uppercase', letterSpacing: '.08em' }}>Join Date</span>
@@ -83,22 +85,24 @@ export default function IDCardTab({ member }: IDCardTabProps) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 16 }}>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '400px' }}>
         <button onClick={handlePrint} style={{
+          flex: '1 1 140px',
           background: '#1a73e8', color: '#fff', border: 'none',
-          padding: '12px 24px', borderRadius: 8, fontWeight: 600,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: '0.95rem', boxShadow: '0 4px 12px rgba(26, 115, 232, 0.2)'
+          padding: '12px 18px', borderRadius: 8, fontWeight: 600,
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(26, 115, 232, 0.2)'
         }}>
-          <Download size={20} /> Download/Print
+          <Download size={18} /> Download/Print
         </button>
         <button style={{
+          flex: '1 1 140px',
           background: '#fff', border: '1px solid #dadce0', color: '#3c4043',
-          padding: '12px 24px', borderRadius: 8, fontWeight: 600,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: '0.95rem'
+          padding: '12px 18px', borderRadius: 8, fontWeight: 600,
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          fontSize: '0.9rem'
         }}>
-          <Printer size={20} /> Print Settings
+          <Printer size={18} /> Print Settings
         </button>
       </div>
 

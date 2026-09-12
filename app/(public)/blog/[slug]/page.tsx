@@ -8,12 +8,32 @@ import type { Metadata } from 'next'
 // ─── Data Fetcher ─────────────────────────────────────────────────────────────
 
 async function getPost(slug: string): Promise<PostDetail> {
-  const res = await fetch(
-    `${process.env.AUTH_URL ?? 'http://localhost:3000'}/api/posts/${slug}`,
-    { cache: 'no-store' }
-  )
-  if (!res.ok) notFound()
-  return res.json()
+  let post = null
+  try {
+    post = await prisma.post.findUnique({
+      where: { slug, isPublished: true },
+      include: {
+        tags:   true,
+        author: {
+          select: {
+            name:     true,
+            slug:     true,
+            imageUrl: true,
+            role:     true,
+            tier:     true,
+            bio:      true,
+            linkedin: true,
+            github:   true,
+          },
+        },
+      },
+    })
+  } catch (error) {
+    console.error(`Error fetching post ${slug}:`, error)
+  }
+
+  if (!post) notFound()
+  return post as unknown as PostDetail
 }
 
 // ─── Static Params ────────────────────────────────────────────────────────────

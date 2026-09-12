@@ -1,0 +1,129 @@
+.announcementsSection {
+  width: 100%;
+  padding: 1.5rem 1.5rem 0.5rem;
+  background: #ffffff;
+}
+
+.container {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.announcementCard {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid var(--gdg-blue, #4285F4);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.announcementCard:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badgeGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ea4335;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(234, 67, 53, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(234, 67, 53, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(234, 67, 53, 0);
+  }
+}
+
+.date {
+  font-size: 0.8rem;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.35;
+  font-family: var(--font-primary, 'Google Sans', sans-serif);
+}
+
+.body {
+  font-size: 0.95rem;
+  color: #3c4043;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .announcementsSection {
+    padding: 1rem 1rem 0.5rem;
+  }
+
+  .announcementCard {
+    padding: 1rem 1.15rem;
+    border-left-width: 3px;
+  }
+
+  .title {
+    font-size: 1.05rem;
+  }
+
+  .body {
+    font-size: 0.9rem;
+  }
+
+  .headerRow {
+    gap: 8px;
+  }
+}

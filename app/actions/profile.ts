@@ -159,36 +159,126 @@ export async function uploadAvatar(formData: FormData) {
   if (!session?.user) return { error: 'Unauthorized' }
 
   const file = formData.get('avatar') as File
-  if (!file || file.size === 0) return { error: 'No file provided' }
-  if (file.size > 2 * 1024 * 1024) return { error: 'File must be under 2MB' }
-  if (!file.type.startsWith('image/')) return { error: 'Must be an image' }
+  if (!file || file.size === 0) return { error: 'No image file provided' }
+  if (file.size > 5 * 1024 * 1024) return { error: 'Image must be under 5MB' }
+  if (!file.type.startsWith('image/')) return { error: 'Only image files are allowed' }
 
-  const ext      = file.type.split('/')[1]
-  const path     = `avatars/${session.user.id}.${ext}`
-  const buffer   = Buffer.from(await file.arrayBuffer())
+  const rawExt = (file.type.split('/')[1] || 'png').toLowerCase().replace('+xml', '')
+  const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+  const cleanExt = validExts.includes(rawExt) ? rawExt : 'png'
 
-  const { error: uploadError } = await supabaseAdmin
-    .storage
-    .from('member-avatars')
-    .upload(path, buffer, {
-      contentType: file.type,
-      upsert:      true,
-    })
+  const buffer = Buffer.from(await file.arrayBuffer())
+  let avatarUrl: string | null = null
 
-  if (uploadError) return { error: uploadError.message }
+  // 1. Try Supabase storage if credentials and client are available
+  if (supabaseAdmin) {
+    try {
+      const path = `avatars/${session.user.id}.${cleanExt}`
+      const { error: uploadError } = await supabaseAdmin
+        .storage
+        .from('member-avatars')
+        .upload(path, buffer, {
+          contentType: file.type,
+          upsert: true,
+        })
 
-  const { data } = supabaseAdmin
-    .storage
-    .from('member-avatars')
-    .getPublicUrl(path)
+      if (!uploadError) {
+        const { data } = supabaseAdmin
+          .storage
+          .from('member-avatars')
+          .getPublicUrl(path)
+        avatarUrl = data.publicUrl
+      } else {
+        console.warn('Supabase storage upload error, falling back to local storage:', uploadError.message)
+      }
+    } catch (err) {
+      console.warn('Supabase upload exception, falling back to local storage:', err)
+    }
+  }
+
+  // 2. Local filesystem storage fallback
+  if (!avatarUrl) {
+    const fs = await import('fs')
+    const path = await import('path')
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars')
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true })
+    }
+
+    // Clean up any previously uploaded local avatar files for this member
+    try {
+      const existing = fs.readdirSync(uploadDir)
+      for (const item of existing) {
+        if (item.startsWith(`avatar-${session.user.id}-`)) {
+          fs.unlinkSync(path.join(uploadDir, item))
+        }
+      }
+    } catch {
+      // Non-fatal if cleanup fails
+    }
+
+    const filename = `avatar-${session.user.id}-${Date.now()}.${cleanExt}`
+    const filepath = path.join(uploadDir, filename)
+    await fs.promises.writeFile(filepath, buffer)
+    avatarUrl = `/uploads/avatars/${filename}`
+  }
+
+  // Update member record in database
+  await prisma.member.update({
+    where: { id: session.user.id },
+    data:  { imageUrl: avatarUrl },
+  })
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/profile')
+  revalidatePath('/dashboard/profile/edit')
+  revalidatePath('/dashboard/id-card')
+  revalidatePath('/team')
+  if (session.user.slug) {
+    revalidatePath(`/team/${session.user.slug}`)
+  }
+  revalidatePath('/admin/members')
+
+  return { success: true, url: avatarUrl }
+}
+
+export async function removeAvatar() {
+  const session = await auth()
+  if (!session?.user) return { error: 'Unauthorized' }
+
+  // Clean up any local avatar file for this member
+  try {
+    const fs = await import('fs')
+    const path = await import('path')
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'avatars')
+    if (fs.existsSync(uploadDir)) {
+      const existing = fs.readdirSync(uploadDir)
+      for (const item of existing) {
+        if (item.startsWith(`avatar-${session.user.id}-`)) {
+          fs.unlinkSync(path.join(uploadDir, item))
+        }
+      }
+    }
+  } catch {
+    // Non-fatal
+  }
 
   await prisma.member.update({
     where: { id: session.user.id },
-    data:  { imageUrl: data.publicUrl },
+    data:  { imageUrl: null },
   })
 
+  revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard/profile/edit')
-  revalidatePath(`/team/${session.user.slug}`)
-  return { success: true, url: data.publicUrl }
+  revalidatePath('/dashboard/id-card')
+  revalidatePath('/team')
+  if (session.user.slug) {
+    revalidatePath(`/team/${session.user.slug}`)
+  }
+  revalidatePath('/admin/members')
+
+  return { success: true }
 }
+

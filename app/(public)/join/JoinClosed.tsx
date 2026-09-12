@@ -147,7 +147,7 @@ export function JoinClosed({
 
         <div className="closed-badge">
           <Lock size={14} />
-          Applications Closed
+          Applications & Registrations Closed
         </div>
 
         <h1 className="join-title">
@@ -159,8 +159,7 @@ export function JoinClosed({
         </h1>
 
         <p className="join-desc">
-          The Chapter Core Team selection has formally concluded. Join us at our
-          upcoming events while you wait for the next recruitment cycle.
+          Chapter membership applications and club registrations are currently out of session. Stay tuned to our announcements and join us at our upcoming public events, workshops, and study jams while waiting for the next registration drive!
         </p>
 
         <div className="social-row">

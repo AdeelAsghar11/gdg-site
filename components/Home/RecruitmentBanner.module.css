@@ -1,0 +1,194 @@
+.bannerWrapper {
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.bannerCard {
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.08) 0%, rgba(52, 168, 83, 0.08) 50%, rgba(251, 188, 4, 0.08) 100%), #ffffff;
+  border: 1.5px solid rgba(66, 133, 244, 0.25);
+  border-radius: 20px;
+  padding: 1.75rem 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-shadow: 0 10px 30px rgba(66, 133, 244, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bannerCard:hover {
+  box-shadow: 0 14px 40px rgba(66, 133, 244, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.bannerCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #4285F4, #34A853);
+}
+
+.contentLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e6f4ea;
+  color: #137333;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(52, 168, 83, 0.3);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  background: #34A853;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.7);
+  animation: pulseAnim 2s infinite;
+}
+
+@keyframes pulseAnim {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(52, 168, 83, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 168, 83, 0);
+  }
+}
+
+.deadlineToTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef7e0;
+  color: #b06000;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid rgba(251, 188, 4, 0.4);
+}
+
+.eligibilityTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(66, 133, 244, 0.3);
+}
+
+.bannerTitle {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #202124;
+  margin: 0 0 0.4rem 0;
+  letter-spacing: -0.01em;
+}
+
+.bannerMessage {
+  font-size: 0.95rem;
+  color: #5f6368;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 680px;
+}
+
+.actionsRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.applyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #4285F4;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+  transition: all 0.2s ease;
+}
+
+.applyBtn:hover {
+  background: #3367d6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(66, 133, 244, 0.45);
+}
+
+.clubsBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #3c4043;
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.clubsBtn:hover {
+  background: #f8f9fa;
+  color: #202124;
+}
+
+@media (max-width: 860px) {
+  .bannerCard {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .actionsRight {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .applyBtn, .clubsBtn {
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+  }
+}

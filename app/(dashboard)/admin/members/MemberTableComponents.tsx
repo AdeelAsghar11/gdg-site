@@ -49,6 +49,10 @@ export function MemberFilters({ search, role, status }: { search: string, role: 
   const [query, setQuery] = useState(search)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  useEffect(() => {
+    setQuery(search)
+  }, [search])
+
   function updateUrl(updates: Record<string, string>) {
     const params = new URLSearchParams(searchParams.toString())
     Object.entries(updates).forEach(([key, val]) => {
@@ -69,21 +73,21 @@ export function MemberFilters({ search, role, status }: { search: string, role: 
   }
 
   return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 20 }}>
-      <div style={{ position: 'relative', flex: 1 }}>
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 20, flexWrap: 'wrap' }}>
+      <div style={{ position: 'relative', flex: '1 1 240px', minWidth: 200 }}>
         <Search size={18} color="#5f6368" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
         <input 
           placeholder="Search name, email, or student ID..."
           value={query}
           onChange={handleSearchChange}
-          style={{ width: '100%', padding: '10px 12px 10px 40px', borderRadius: 8, border: '1px solid #dadce0', outline: 'none' }}
+          style={{ width: '100%', padding: '10px 12px 10px 40px', borderRadius: 8, border: '1px solid #dadce0', outline: 'none', boxSizing: 'border-box' }}
         />
       </div>
       
       <select 
         value={role} 
         onChange={(e) => updateUrl({ role: e.target.value })}
-        style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid #dadce0', background: '#fff' }}
+        style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid #dadce0', background: '#fff', fontSize: '0.85rem' }}
       >
         <option value="">All Roles</option>
         <option value="member">Members</option>
@@ -94,7 +98,7 @@ export function MemberFilters({ search, role, status }: { search: string, role: 
       <select 
         value={status} 
         onChange={(e) => updateUrl({ status: e.target.value })}
-        style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid #dadce0', background: '#fff' }}
+        style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid #dadce0', background: '#fff', fontSize: '0.85rem' }}
       >
         <option value="">All Status</option>
         <option value="active">Active</option>

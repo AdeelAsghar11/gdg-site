@@ -1,12 +1,14 @@
 'use client'
 
 import React, { useTransition, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Github,
   Linkedin,
   Instagram,
   ExternalLink,
   Upload,
+  Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
 import { uploadAvatar } from '@/app/actions/profile'
@@ -16,6 +18,7 @@ interface OverviewTabProps {
 }
 
 export default function OverviewTab({ member }: OverviewTabProps) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [currentUrl, setCurrentUrl] = useState(member.imageUrl)
@@ -23,6 +26,15 @@ export default function OverviewTab({ member }: OverviewTabProps) {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file (PNG, JPG, or WEBP).')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be under 5MB.')
+      return
+    }
 
     const formData = new FormData()
     formData.append('avatar', file)
@@ -34,6 +46,7 @@ export default function OverviewTab({ member }: OverviewTabProps) {
       } else if (result.url) {
         setCurrentUrl(result.url)
         setError(null)
+        router.refresh()
       }
     })
   }
@@ -69,20 +82,33 @@ export default function OverviewTab({ member }: OverviewTabProps) {
             </div>
           )}
           
-          <label style={{
-            position: 'absolute', bottom: -4, right: -4,
-            background: '#fff', border: '1px solid #dadce0',
-            borderRadius: '50%', width: 28, height: 28,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: isPending ? 'not-allowed' : 'pointer',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            opacity: isPending ? 0.7 : 1,
-          }}>
-            <Upload size={14} color="#5F6368" />
-            <input type="file" accept="image/*" onChange={handleAvatarUpload} disabled={isPending} style={{ display: 'none' }} />
+          <label
+            title="Click to choose a new profile picture"
+            style={{
+              position: 'absolute', bottom: -4, right: -4,
+              background: '#fff', border: '1px solid #dadce0',
+              borderRadius: '50%', width: 30, height: 30,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: isPending ? 'not-allowed' : 'pointer',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              opacity: isPending ? 0.7 : 1,
+            }}
+          >
+            {isPending ? (
+              <Loader2 size={15} color="#4285F4" style={{ animation: 'spin 1s linear infinite' }} />
+            ) : (
+              <Upload size={14} color="#5F6368" />
+            )}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/jpg"
+              onChange={handleAvatarUpload}
+              disabled={isPending}
+              style={{ display: 'none' }}
+            />
           </label>
           
-          {error && <p style={{ position: 'absolute', top: 84, left: 0, width: 200, fontSize: '0.7rem', color: '#EA4335', margin: 0 }}>{error}</p>}
+          {error && <p style={{ position: 'absolute', top: 86, left: 0, width: 220, fontSize: '0.75rem', color: '#EA4335', margin: 0 }}>{error}</p>}
         </div>
 
         <div style={{ flex: 1 }}>

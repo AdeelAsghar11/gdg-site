@@ -15,7 +15,7 @@ async function getEvents(params?: {
   const topic  = params?.topic  ?? ''
   const date   = params?.date   ?? ''
   const page   = Math.max(1, params?.page ?? 1)
-  const limit  = 10
+  const limit  = 20
   const skip   = (page - 1) * limit
 
   const where: any = {
@@ -44,7 +44,7 @@ async function getEvents(params?: {
           tags:          true,
           _count: { select: { registrations: true } },
         },
-        orderBy: { date: 'asc' },
+        orderBy: { date: 'desc' },
         skip,
         take: limit,
       }),
@@ -94,7 +94,7 @@ async function getAllEvents() {
         tags: true,
         _count: { select: { registrations: true } },
       },
-      orderBy: { date: 'asc' },
+      orderBy: { date: 'desc' },
       take: 200,
     })
     return events as unknown as EventSummary[];
@@ -137,28 +137,6 @@ export default async function EventsPage({
   } catch (error) {
     console.warn('⚠️ Could not fetch all event data during build.');
   }
-
-  const algothonEvent = {
-    id: 'algothon-static',
-    title: 'Algothon: Workshop + Hackathon',
-    slug: 'algothon',
-    date: new Date('2026-09-29T10:00:00.000Z'),
-    location: 'B26 Seminar Hall, COMSATS University Islamabad, Wah Campus',
-    type: 'WORKSHOP',
-    tags: [{ tag: 'Hackathon' }, { tag: 'Workshop' }],
-    description: 'Algothon is a two-day immersive technology event designed to empower students, developers, and tech enthusiasts through a combination of hands-on learning and competitive innovation.',
-    badgeUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
-    imageUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
-    _count: { registrations: 0 },
-    isPublished: true,
-  } as any;
-
-  // Insert Algothon event manually
-  data.events = [algothonEvent, ...data.events];
-  allEvents = [algothonEvent, ...allEvents];
-  upcomingCount += 1;
-  if (!meta.types.includes('WORKSHOP')) meta.types.push('WORKSHOP');
-  if (!meta.topics.includes('Hackathon')) meta.topics.push('Hackathon');
 
   return (
     <div className="events-root">
@@ -280,22 +258,24 @@ export default async function EventsPage({
         .filter-select { height: 48px; border: 1px solid #dadce0; border-radius: 4px; padding: 0 16px; min-width: 180px; display: flex; align-items: center; justify-content: space-between; font-size: 16px; color: #5f6368; background: white; cursor: pointer; }
 
         /* Event Card Styles */
-        .event-card { display: flex; gap: 40px; margin-bottom: 60px; transition: all 0.3s; }
+        .event-card { display: flex; gap: 28px; margin-bottom: 28px; transition: all 0.3s; background: #ffffff; border: 1px solid #e8eaed; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(60,64,67,0.04); }
+        .event-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(60,64,67,0.08); border-color: #d2e3fc; }
         .event-badge-wrapper { flex-shrink: 0; }
-        .badge-outer { width: 140px; height: 140px; background: #fff; border: 1px solid #f1f3f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
-        .badge-image { width: 100%; height: 100%; object-fit: cover; }
+        .badge-outer { width: 250px; height: auto; aspect-ratio: 16 / 9; background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; position: relative; }
+        .badge-image { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform 0.4s ease; display: block; }
+        .event-card:hover .badge-image { transform: scale(1.04); }
 
-        .event-content { flex: 1; }
-        .event-meta { font-size: 12px; font-weight: 700; color: #5f6368; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+        .event-content { flex: 1; min-width: 0; }
+        .event-meta { font-size: 12px; font-weight: 700; color: #5f6368; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; flex-wrap: wrap; }
         .meta-sep { color: #dadce0; }
         .meta-loc { color: #1a73e8; }
-        .event-title { font-size: 28px; font-weight: 500; color: #202124; margin: 0 0 16px 0; line-height: 1.2; letter-spacing: -0.3px; }
+        .event-title { font-size: 24px; font-weight: 600; color: #202124; margin: 0 0 12px 0; line-height: 1.3; letter-spacing: -0.3px; }
         
-        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-        .event-tag { background: #f1f3f4; color: #5f6368; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .event-tag { background: #f1f3f4; color: #5f6368; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
         
-        .event-desc { font-size: 15px; line-height: 1.6; color: #3c4043; margin-bottom: 24px; max-width: 850px; }
-        .details-btn { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .event-desc { font-size: 15px; line-height: 1.6; color: #5f6368; margin-bottom: 20px; max-width: 850px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+        .details-btn { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
         .details-btn:hover { background: #1557b0; }
 
         /* Calendar */
@@ -324,14 +304,18 @@ export default async function EventsPage({
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-          .events-root { padding: 40px 16px; }
-          .event-card { flex-direction: column; gap: 24px; text-align: center; margin-bottom: 48px; }
-          .badge-outer { width: 120px; height: 120px; margin: 0 auto; }
-          .badge-image { width: 80px; height: 80px; }
-          .event-meta, .tag-list { justify-content: center; flex-wrap: wrap; }
-          .event-title { font-size: 24px; }
-          .hero-title { font-size: 32px; }
-          .filter-bar { grid-template-columns: 1fr; }
+          .main-container { padding: 24px 14px; }
+          .events-root { padding: 16px 0; }
+          .event-card { flex-direction: column; gap: 16px; text-align: left; margin-bottom: 20px; padding: 16px; border-radius: 14px; }
+          .event-badge-wrapper { width: 100%; }
+          .badge-outer { width: 100%; height: auto; aspect-ratio: 16 / 9; margin: 0; border-radius: 12px; }
+          .badge-image { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+          .event-meta { justify-content: flex-start; flex-wrap: wrap; gap: 6px; font-size: 11px; line-height: 1.4; margin-bottom: 10px; }
+          .tag-list { justify-content: flex-start; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+          .event-title { font-size: 20px; margin-bottom: 10px; line-height: 1.3; }
+          .event-desc { font-size: 14px; margin-bottom: 16px; -webkit-line-clamp: 3; }
+          .hero-title { font-size: 28px; }
+          .filter-bar { grid-template-columns: 1fr; gap: 8px; }
           .cal-day { height: 80px; padding: 6px; }
           .cal-month-nav h3 { min-width: 110px; font-size: 16px; }
         }

@@ -1,24 +1,29 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { Menu, X } from 'lucide-react';
 import { SidebarLinks } from './SidebarLinks';
 import { LogoutButton } from './LogoutButton';
+import styles from './DashboardLayout.module.css';
 
 type NavLink = {
-  href:      string
-  label:     string
-  highlight?: boolean  // true for "+ Add" style links
-}
+  href:      string;
+  label:     string;
+  highlight?: boolean;
+};
 
 type DashboardLayoutProps = {
-  children:    React.ReactNode
-  panelLabel:  string
-  accentColor: string
-  navLinks:    NavLink[]
+  children:    React.ReactNode;
+  panelLabel:  string;
+  accentColor: string;
+  navLinks:    NavLink[];
   user: {
-    name:     string
-    role:     string
-    imageUrl: string | null
-  }
-}
+    name:     string;
+    role:     string;
+    imageUrl: string | null;
+  };
+};
 
 export default function DashboardLayout({
   children,
@@ -27,85 +32,114 @@ export default function DashboardLayout({
   navLinks,
   user,
 }: DashboardLayoutProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close sidebar drawer automatically when navigating to another route
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh',
-      fontFamily: "'Google Sans Text', sans-serif" }}>
+    <div className={styles.layoutRoot}>
+      {/* Mobile Top Header */}
+      <header className={styles.mobileHeader}>
+        <button
+          type="button"
+          className={styles.hamburgerBtn}
+          onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open Navigation Menu"
+        >
+          <Menu size={22} />
+        </button>
 
-      {/* Sidebar */}
-      <aside 
+        <div className={styles.panelBadge}>
+          <div className={styles.panelDot} style={{ background: accentColor }} />
+          <span className={styles.panelLabelText}>{panelLabel}</span>
+        </div>
+
+        <div
+          className={styles.userAvatarFallback}
+          style={{
+            background: accentColor + '20',
+            color: accentColor,
+            width: 32,
+            height: 32,
+            fontSize: '0.8rem',
+          }}
+        >
+          {user.name.charAt(0)}
+        </div>
+      </header>
+
+      {/* Backdrop overlay on mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div
+          className={styles.mobileBackdrop}
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar / Off-canvas drawer */}
+      <aside
         data-lenis-prevent
-        style={{
-          width:        256,
-          borderRight:  '1px solid #e8eaed',
-          padding:      '1.5rem 1rem',
-          background:   '#fff',
-          flexShrink:   0,
-          display:      'flex',
-          flexDirection: 'column',
-          position:     'sticky',
-          top:          0,
-          height:       '100vh',
-          overflowY:    'auto',
-          msOverflowStyle: 'none', // Hide scrollbar for IE/Edge
-          WebkitOverflowScrolling: 'touch', // Smooth swipe for mobile
-        }}
+        className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ''}`}
       >
+        {/* Panel label with accent dot & Mobile close button */}
+        <div className={styles.sidebarHeader}>
+          <div className={styles.panelBadge}>
+            <div className={styles.panelDot} style={{ background: accentColor }} />
+            <span className={styles.panelLabelText}>{panelLabel}</span>
+          </div>
 
-        {/* Panel label with accent dot */}
-        <div style={{ display: 'flex', alignItems: 'center',
-          gap: 8, marginBottom: 28, padding: '0 8px' }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%',
-            background: accentColor, flexShrink: 0 }} />
-          <span style={{ fontWeight: 700, fontSize: '0.75rem',
-            textTransform: 'uppercase', letterSpacing: '.06em',
-            color: '#5F6368' }}>
-            {panelLabel}
-          </span>
+          <button
+            type="button"
+            className={styles.sidebarCloseBtn}
+            onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close Navigation Menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Nav links */}
-        <nav style={{ display: 'flex', flexDirection: 'column',
-          gap: 2, flex: 1 }}>
+        <nav className={styles.navContainer}>
           <SidebarLinks links={navLinks} accentColor={accentColor} />
         </nav>
 
         {/* Signed-in user block */}
-        <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16,
-          marginTop: 16 }}>
-          
-          <a href="/" style={{ display: 'block', padding: '8px 12px', 
-            fontSize: '0.85rem', color: '#5F6368', textDecoration: 'none',
-            borderRadius: 8, marginBottom: 4 }}>
+        <div className={styles.userBlock}>
+          <a href="/" className={styles.publicLink}>
             ← Public site
           </a>
-          
+
           <LogoutButton accentColor={accentColor} />
 
-          <div style={{ display: 'flex', alignItems: 'center',
-            gap: 10, padding: '8px 10px', borderRadius: 8,
-            background: accentColor + '10' }}>
-            {user.imageUrl
-              ? <img src={user.imageUrl} alt=""
-                  style={{ width: 32, height: 32, borderRadius: '50%',
-                    objectFit: 'cover', flexShrink: 0 }} />
-              : <div style={{ width: 32, height: 32, borderRadius: '50%',
-                  background: accentColor + '30', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontSize: '0.85rem',
-                  color: accentColor, flexShrink: 0 }}>
-                  {user.name.charAt(0)}
-                </div>
-            }
+          <div
+            className={styles.userProfileBadge}
+            style={{ background: accentColor + '10' }}
+          >
+            {user.imageUrl ? (
+              <img
+                src={user.imageUrl}
+                alt=""
+                className={styles.userAvatarImg}
+              />
+            ) : (
+              <div
+                className={styles.userAvatarFallback}
+                style={{
+                  background: accentColor + '30',
+                  color: accentColor,
+                }}
+              >
+                {user.name.charAt(0)}
+              </div>
+            )}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontWeight: 600, fontSize: '0.85rem',
-                margin: 0, color: '#202124',
-                overflow: 'hidden', textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap' }}>
-                {user.name}
-              </p>
-              <p style={{ fontSize: '0.75rem', margin: 0,
-                color: accentColor, fontWeight: 500,
-                textTransform: 'capitalize' }}>
+              <p className={styles.userName}>{user.name}</p>
+              <p className={styles.userRole} style={{ color: accentColor }}>
                 {user.role}
               </p>
             </div>
@@ -114,10 +148,9 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto',
-        background: '#fafafa', minHeight: '100vh' }}>
+      <main className={styles.mainContent}>
         {children}
       </main>
     </div>
-  )
+  );
 }

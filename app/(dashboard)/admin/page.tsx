@@ -32,9 +32,9 @@ export default async function AdminOverviewPage() {
   const totalPoints = totalPointsResult._sum.points || 0
 
   const stats = [
-    { label: 'Total Members',       value: totalMembers,        href: '/admin/members',        color: '#202124' },
-    { label: 'Active Members',      value: activeMembers,       href: '/admin/members',        color: '#34A853' },
-    { label: 'Core Team',           value: coreMembers,         href: '/admin/members',        color: '#4285F4' },
+    { label: 'Total Members',       value: totalMembers,        href: '/admin/members',                 color: '#202124' },
+    { label: 'Active Members',      value: activeMembers,       href: '/admin/members?status=active',   color: '#34A853' },
+    { label: 'Core Team',           value: coreMembers,         href: '/admin/members?role=core',       color: '#4285F4' },
     { label: 'Total Events',        value: totalEvents,         href: '/core/events',        color: '#4285F4' },
     { label: 'Published Posts',     value: totalPosts,          href: '/core/blog',          color: '#34A853' },
     { label: 'Active Announcements', value: activeAnnouncements, href: '/core/announcements', color: '#FBBC04' },
@@ -56,8 +56,8 @@ export default async function AdminOverviewPage() {
       
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 20,
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: 16,
       }}>
         {stats.map((stat, i) => (
           <Link

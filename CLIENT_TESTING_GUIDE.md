@@ -10,9 +10,9 @@ Use these credentials to test the various levels of access on the platform. The 
 
 | Role | Email | Purpose |
 | :--- | :--- | :--- |
-| **Admin** | `kashif@cuiwah.edu.pk` | Full access: manage members, settings, and recruitment. |
-| **Core** | `ubaidghazi@example.com` | Manage content: events, blog, clubs, and resources. |
-| **Member** | `ismail@example.com` | Personal dashboard: view ID card, update profile, register for events. |
+| **Admin** | `kashif.ayub@example.com` | Full access: manage members, settings, and recruitment. |
+| **Core** | `ubaid@example.com` or `mrismaeel@outlook.com` | Manage content: events, blog, clubs, and resources. |
+| **Member** | `zohaib@example.com` or `ayesha@example.com` | Personal dashboard: view ID card, update profile, register for events. |
 
 ---
 

@@ -1,79 +1,103 @@
-.partners {
-    display: flex;
-    align-items: center;
-    padding: 60px 0;
-    background-color: var(--white);
-    border-top: 1px solid var(--gray-100);
+.partnersSection {
+    padding: 80px 0;
+    background-color: #ffffff;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 24px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
-.header h2 {
-    font-size: var(--heading-size);
+.title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
     font-weight: 700;
-    margin: 8px 0;
+    color: #202124;
+    margin-bottom: 36px;
     letter-spacing: -0.02em;
-}
-
-.header p {
-    color: var(--gray-600);
-    font-size: var(--description-size);
-    line-height: 1.6;
-    margin-top: 12px;
+    font-family: 'Google Sans', 'Product Sans', sans-serif;
+    text-align: center;
 }
 
 .logoGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
+    gap: 24px;
+}
+
+@media (min-width: 1025px) {
+    /* Align 5th item to start at column 2 so Cheezious & Korneez sit centered below */
+    .partnerCard:nth-child(5) {
+        grid-column-start: 2;
+    }
+}
+
+@media (max-width: 1024px) {
+    .logoGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .logoGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logoGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.partnerCard {
+    display: flex;
     align-items: center;
-    justify-items: center;
-}
-
-.logoItem {
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 16px;
+    padding: 32px;
+    aspect-ratio: 1 / 1;
     width: 100%;
-    max-width: 150px;
-    transition: transform 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
-.githubLogo {
-    max-width: 110px;
+.partnerCard:hover {
+    border-color: #bdc1c6;
+    box-shadow: 0 10px 28px rgba(60, 64, 67, 0.12);
+    transform: translateY(-4px);
 }
 
 .logoWrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .logoImage {
     object-fit: contain;
-    transition: all 0.4s ease;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+    filter: none;
 }
 
-.logoItem:hover {
-    transform: translateY(-4px);
-}
-
-@media (max-width: 1024px) {
-    .logoGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 32px;
-    }
-}
-
-@media (max-width: 600px) {
-    .partners {
-        padding: 40px 0;
-    }
-
-    .logoGrid {
-        gap: 24px;
-    }
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #3c4043;
+    text-align: center;
 }

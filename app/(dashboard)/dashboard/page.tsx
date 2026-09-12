@@ -33,29 +33,68 @@ export default async function DashboardPage() {
   ] : [];
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+      <style>{`
+        .dash-main-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 300px;
+          gap: 32px;
+        }
+        .dash-stats-row {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+        .dash-activity-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+        }
+        @media (max-width: 992px) {
+          .dash-main-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+        }
+        @media (max-width: 600px) {
+          .dash-stats-row {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+          .dash-activity-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+          .dash-header-row {
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start !important;
+          }
+        }
+      `}</style>
       
       {/* Header Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+      <div className="dash-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 4px', color: '#202124' }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: '0 0 4px', color: '#202124' }}>
             Welcome back, {data.member.name}
           </h1>
-          <p style={{ color: '#5F6368', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>
+          <p style={{ color: '#5F6368', margin: 0, fontSize: '0.9rem', fontWeight: 500 }}>
             {memberId} · {data.member.department || (isAdmin ? 'Administrator' : isCore ? 'Core Team' : 'Community Member')}
           </p>
         </div>
         <Link href="/dashboard/profile" style={{
-          padding: '10px 20px', borderRadius: 8, background: '#fff',
+          padding: '8px 18px', borderRadius: 8, background: '#fff',
           border: '1px solid #dadce0', color: '#3C4043',
-          fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none'
+          fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none'
         }}>
           View Profile
         </Link>
       </div>
 
       {/* --- Dashboard Grid System --- */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 32 }}>
+      <div className="dash-main-grid">
         
         {/* Left Column: Personal + Main Stats */}
         <div>
@@ -63,11 +102,11 @@ export default async function DashboardPage() {
           <h2 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: '#5F6368', marginBottom: 12 }}>
             Personal Activity
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+          <div className="dash-stats-row">
             {personalStats.map((stat, i) => (
               <div key={i} style={{
                 background: '#fff', border: '1px solid #e8eaed',
-                borderRadius: 12, padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                borderRadius: 12, padding: '16px 20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
               }}>
                 <p style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#5F6368', marginBottom: 4 }}>
                   {stat.label}
@@ -85,7 +124,7 @@ export default async function DashboardPage() {
               <h2 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: '#5F6368', marginBottom: 12 }}>
                 Management Hub (Core & Admin)
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16 }}>
                 {managementStats.map((stat, i) => (
                   <Link key={i} href={stat.href} style={{
                     background: '#fff', border: '1px solid #e8eaed',
@@ -106,22 +145,22 @@ export default async function DashboardPage() {
           )}
 
           {/* Two-column Activity/News */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div className="dash-activity-grid">
              {/* Recent Events */}
              <div>
                 <h3 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#5F6368', marginBottom: 12 }}>Recent Events</h3>
                 <div style={{ background: '#fff', border: '1px solid #e8eaed', borderRadius: 12 }}>
                    {data.recentRegistrations.length > 0 ? data.recentRegistrations.map((reg, i) => (
                       <div key={reg.id} style={{
-                        padding: '16px 20px',
+                        padding: '14px 18px',
                         borderBottom: i === data.recentRegistrations.length - 1 ? 'none' : '1px solid #e8eaed',
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                       }}>
-                        <div>
-                          <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#202124', margin: 0 }}>{reg.event.title}</p>
+                        <div style={{ minWidth: 0, flex: 1, paddingRight: 10 }}>
+                          <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#202124', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{reg.event.title}</p>
                           <p style={{ fontSize: '0.75rem', color: '#5F6368', margin: 0 }}>{new Date(reg.event.date).toLocaleDateString()}</p>
                         </div>
-                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: reg.attendedAt ? '#1E8E3E' : '#1967D2' }}>{reg.attendedAt ? 'Attended' : 'Joined'}</span>
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: reg.attendedAt ? '#1E8E3E' : '#1967D2', flexShrink: 0 }}>{reg.attendedAt ? 'Attended' : 'Joined'}</span>
                       </div>
                    )) : <p style={{ padding: 20, color: '#5F6368', fontSize: '0.85rem' }}>No recent events.</p>}
                 </div>
@@ -133,7 +172,7 @@ export default async function DashboardPage() {
                 <div style={{ background: '#fff', border: '1px solid #e8eaed', borderRadius: 12 }}>
                    {data.announcements.length > 0 ? data.announcements.map((a, i) => (
                       <div key={a.id} style={{
-                        padding: '16px 20px',
+                        padding: '14px 18px',
                         borderBottom: i === data.announcements.length - 1 ? 'none' : '1px solid #e8eaed'
                       }}>
                         <p style={{ fontWeight: 600, fontSize: '0.85rem', color: '#202124', margin: '0 0 4px' }}>{a.title}</p>
@@ -148,15 +187,15 @@ export default async function DashboardPage() {
         {/* Right Column: Mini Tools/Club */}
         <div>
           {/* My Club Pill */}
-          <div style={{ marginBottom: 32 }}>
+          <div style={{ marginBottom: 28 }}>
             <h2 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: '#5F6368', marginBottom: 12 }}>My Chapter Club</h2>
             <div style={{
-              padding: '24px', borderRadius: 16, background: data.clubMembership?.club.colorToken ? data.clubMembership.club.colorToken + '10' : '#f8f9fa',
+              padding: '20px', borderRadius: 16, background: data.clubMembership?.club.colorToken ? data.clubMembership.club.colorToken + '10' : '#f8f9fa',
               border: `1px solid ${data.clubMembership?.club.colorToken || '#e8eaed'}`
             }}>
               {data.clubMembership ? (
                 <>
-                  <p style={{ fontWeight: 800, fontSize: '1.25rem', color: data.clubMembership.club.colorToken || '#202124', margin: '0 0 4px' }}>{data.clubMembership.club.name}</p>
+                  <p style={{ fontWeight: 800, fontSize: '1.2rem', color: data.clubMembership.club.colorToken || '#202124', margin: '0 0 4px' }}>{data.clubMembership.club.name}</p>
                   <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 600, color: '#5F6368' }}>{data.clubMembership.club.type.toUpperCase()}</p>
                 </>
               ) : (
@@ -170,14 +209,14 @@ export default async function DashboardPage() {
             <div>
               <h3 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#5F6368', marginBottom: 12 }}>Special Actions</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <Link href="/core/announcements" style={{ textDecoration: 'none', color: '#4285F4', fontSize: '0.9rem', padding: '8px 12px', background: '#E8F0FE', border: '1px solid #B4D1FA', borderRadius: 8 }}>Post Announcement</Link>
+                <Link href="/core/announcements" style={{ textDecoration: 'none', color: '#4285F4', fontSize: '0.85rem', padding: '10px 14px', background: '#E8F0FE', border: '1px solid #B4D1FA', borderRadius: 8, fontWeight: 600 }}>Post Announcement</Link>
               </div>
             </div>
           )}
         </div>
 
       </div>
-      <div style={{ height: 60 }} />
+      <div style={{ height: 40 }} />
     </div>
   );
 }

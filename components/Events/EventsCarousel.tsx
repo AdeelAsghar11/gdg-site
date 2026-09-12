@@ -11,7 +11,7 @@ async function getFeaturedEvents(): Promise<EventSummary[]> {
         _count: { select: { registrations: true } }
       },
       orderBy: { date: 'desc' },
-      take:    4,
+      take:    12,
     })
 
     return events as unknown as EventSummary[]
