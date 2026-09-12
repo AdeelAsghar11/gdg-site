@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import styles from './Login.module.css';
-
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -14,6 +13,16 @@ const LoginForm = () => {
     const [isPending, setIsPending] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const urlError = searchParams.get('error');
+        if (urlError === 'CredentialsSignin') {
+            setError('Invalid email or password.');
+        } else if (urlError) {
+            setError('Authentication failed. Please try again.');
+        }
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,15 +42,24 @@ const LoginForm = () => {
             } else {
                 // Success! Force a router refresh to update session and meta stats
                 router.refresh();
-                // Redirection will happen automatically if we use standard NextAuth redirect
-                // but since we want custom logic, we can fetch session to check role
-                const res = await fetch('/api/auth/session');
-                const session = await res.json();
-                const role = session?.user?.role;
-                
-                if (role === 'admin') router.push('/admin');
-                else if (role === 'core') router.push('/core');
-                else router.push('/dashboard');
+                try {
+                    const res = await fetch('/api/auth/session');
+                    const contentType = res.headers.get('content-type');
+                    if (res.ok && contentType && contentType.includes('application/json')) {
+                        const session = await res.json();
+                        const role = session?.user?.role;
+                        if (role === 'admin') {
+                            router.push('/admin');
+                            return;
+                        } else if (role === 'core') {
+                            router.push('/core');
+                            return;
+                        }
+                    }
+                } catch {
+                    // Ignore session parse error and default redirect
+                }
+                router.push('/dashboard');
             }
         } catch (err) {
             setError('Something went wrong. Please try again.');
