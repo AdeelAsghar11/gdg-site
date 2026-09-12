@@ -58,12 +58,40 @@ export default async function AdminRecruitmentPage({
 
   return (
     <div>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 8 }}>
-        Recruitment Management
-      </h1>
-      <p style={{ color: '#5F6368', marginBottom: 24, fontSize: '0.9rem' }}>
-        Review applications, manage recruitment status, and convert accepted applicants into members.
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 8 }}>
+            Recruitment Management
+          </h1>
+          <p style={{ color: '#5F6368', margin: 0, fontSize: '0.9rem' }}>
+            Review applications, manage recruitment status, and convert accepted applicants into members.
+          </p>
+        </div>
+        <a
+          href="/api/admin/applications/export"
+          download
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#137333',
+            color: '#fff',
+            padding: '10px 18px',
+            borderRadius: 8,
+            fontSize: '0.875rem',
+            fontWeight: 700,
+            textDecoration: 'none',
+            boxShadow: '0 2px 6px rgba(19, 115, 51, 0.25)',
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download All as Excel (CSV)
+        </a>
+      </div>
 
       {/* Status control section */}
       <RecruitmentStatusControl

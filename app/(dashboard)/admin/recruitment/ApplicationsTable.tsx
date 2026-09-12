@@ -9,7 +9,7 @@ import {
   deleteApplication,
   bulkUpdateStatus,
 } from '@/app/actions/admin/recruitment'
-import { ChevronRight, ChevronDown, Check, X, Trash2, ExternalLink } from 'lucide-react'
+import { ChevronRight, ChevronDown, Check, X, Trash2, ExternalLink, Download } from 'lucide-react'
 import Link from 'next/link'
 
 type Application = {
@@ -175,8 +175,34 @@ export function ApplicationsTable({
           <option value="">All statuses</option>
           <option value="pending">Pending</option>
           <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
         </select>
+
+        <a
+          href={`/api/admin/applications/export?${new URLSearchParams({
+            ...(statusFilter ? { status: statusFilter } : {}),
+            ...(searchFilter ? { search: searchFilter } : {})
+          }).toString()}`}
+          download
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#188038',
+            color: '#fff',
+            padding: '10px 16px',
+            borderRadius: 8,
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            textDecoration: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            marginLeft: selected.length > 0 ? 0 : 'auto',
+          }}
+          title="Download applicants matching current filter as an Excel/CSV file"
+        >
+          <Download size={16} />
+          Export to Excel (CSV)
+        </a>
 
         {/* Bulk actions */}
         {selected.length > 0 && (
