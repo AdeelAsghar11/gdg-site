@@ -67,7 +67,7 @@ async function main() {
       name: 'Ubaid Ghazi',
       email: 'ubaidghazi@example.com',
       passwordHash: defaultPassword,
-      role: 'core',
+      role: 'admin',
       tier: 'leadership',
       tagline: 'Leading with vision, building with purpose.',
       imageUrl: '/images/team/ubaid.png',
