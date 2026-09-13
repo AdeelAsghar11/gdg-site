@@ -30,8 +30,9 @@ const LoginForm = () => {
         setIsPending(true);
 
         try {
+            const cleanEmail = email.trim().toLowerCase();
             const result = await signIn('credentials', {
-                email,
+                email: cleanEmail,
                 password,
                 redirect: false,
             });
