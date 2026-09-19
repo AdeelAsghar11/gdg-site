@@ -28,24 +28,27 @@ export default function PublicLayout({
       }}>
         <span style={{ fontSize: '16px' }}>🚀</span>
         <span>HACKDATA V2 is officially here! Don't miss out on the ultimate hackathon experience.</span>
-        <a 
-          href="/hackdatav2/index.html" 
-          style={{
-            backgroundColor: '#111',
-            color: '#fffc4d',
-            padding: '6px 16px',
-            borderRadius: '999px',
-            textDecoration: 'none',
-            fontSize: '12px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            transition: 'opacity 0.2s',
-          }}
-          onMouseOver={(e) => e.currentTarget.style.opacity = '0.8'}
-          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
-        >
+        
+        <style>{`
+          .hackdata-btn {
+            background-color: #111;
+            color: #fffc4d;
+            padding: 6px 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+          }
+          .hackdata-btn:hover {
+            opacity: 0.8;
+          }
+        `}</style>
+        <a href="/hackdatav2/index.html" className="hackdata-btn">
           Register Now ➔
         </a>
+
       </div>
 
       <main>{children}</main>
