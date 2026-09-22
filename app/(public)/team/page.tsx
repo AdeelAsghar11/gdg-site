@@ -781,7 +781,12 @@ export default async function TeamPage() {
                 imageUrl: "/images/team/talha_ahmed.png",
                 slug: "talha-ahmed"
               }}
-              coLead={null}
+              coLead={{
+                name: "Syeda Wareesha",
+                role: "Creative Co-Lead",
+                imageUrl: "/images/team/syeda_wareesha.png",
+                slug: "syeda-wareesha"
+              }}
             />
 
             {/* Growth and Impact */}

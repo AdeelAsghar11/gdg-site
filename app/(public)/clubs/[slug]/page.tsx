@@ -186,7 +186,12 @@ const CLUBS_DATA: Record<string, ClubDetailData> = {
       imageUrl: '/images/team/talha_ahmed.png',
       profileSlug: 'talha-ahmed',
     },
-    coLead: null,
+    coLead: {
+      name: 'Syeda Wareesha',
+      role: 'Co-Lead',
+      imageUrl: '/images/team/syeda_wareesha.png',
+      profileSlug: 'syeda-wareesha',
+    },
     about: 'The Creative Club is the artistic powerhouse behind GDGoC. Members design event banners, social media graphics, UI/UX design prototypes, and official chapter merchandise, following Google Developer Groups visual design guidelines.',
     objectives: [
       'Create high-impact graphic designs using Figma and Adobe Illustrator',
