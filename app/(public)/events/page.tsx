@@ -138,6 +138,49 @@ export default async function EventsPage({
     console.warn('⚠️ Could not fetch all event data during build.');
   }
 
+  const mtmEvent = {
+    id: 'mtm-national-2026',
+    title: 'MTM: National Level Hackathon 2026',
+    slug: 'mtm',
+    date: new Date('2026-11-14T09:00:00.000Z'),
+    location: 'E-Rozgar Center, CUI Wah Campus',
+    type: 'HACKATHON',
+    tags: [{ tag: 'Hackathon' }, { tag: 'AI & GenAI' }, { tag: 'GitHub' }, { tag: 'National Level' }],
+    description: 'MTM is a premier national-level hackathon bringing together over 200 student developers and chapters from 15+ universities across Pakistan. Officially supported by Google Developer Groups and sponsored by GitHub.',
+    badgeUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    imageUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    _count: { registrations: 200 },
+    isPublished: true,
+  } as any;
+
+  const algothonEvent = {
+    id: 'algothon-static',
+    title: 'Algothon: Workshop + Hackathon',
+    slug: 'algothon',
+    date: new Date('2026-09-29T10:00:00.000Z'),
+    location: 'B26 Seminar Hall, COMSATS University Islamabad, Wah Campus',
+    type: 'WORKSHOP',
+    tags: [{ tag: 'Hackathon' }, { tag: 'Workshop' }],
+    description: 'Algothon is a two-day immersive technology event designed to empower students, developers, and tech enthusiasts through hands-on learning and competitive innovation.',
+    badgeUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    imageUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+    _count: { registrations: 0 },
+    isPublished: true,
+  } as any;
+
+  if (!data.events.some(e => e.slug === 'mtm')) {
+    data.events = [mtmEvent, ...data.events];
+    allEvents = [mtmEvent, ...allEvents];
+    upcomingCount += 1;
+    if (!meta.types.includes('HACKATHON')) meta.types.push('HACKATHON');
+    if (!meta.topics.includes('AI & GenAI')) meta.topics.push('AI & GenAI');
+  }
+
+  if (!data.events.some(e => e.slug === 'algothon')) {
+    data.events = [...data.events, algothonEvent];
+    allEvents = [...allEvents, algothonEvent];
+  }
+
   return (
     <div className="events-root">
       <style>{`

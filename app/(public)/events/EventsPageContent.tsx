@@ -28,8 +28,10 @@ function isHackathon(ev: EventSummary): boolean {
     slug.includes('competition') ||
     slug.includes('visio-spark') ||
     slug.includes('algothon') ||
+    slug.includes('mtm') ||
     title.includes('hackathon') ||
-    title.includes('competition')
+    title.includes('competition') ||
+    title.includes('mtm')
   );
 }
 

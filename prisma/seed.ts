@@ -517,6 +517,33 @@ async function main() {
   });
 
   await prisma.event.upsert({
+    where: { slug: 'mtm' },
+    update: {},
+    create: {
+      slug: 'mtm',
+      title: 'MTM: National Level Hackathon 2026',
+      description: 'MTM is a prestigious national-level hackathon bringing together over 200 student developers and chapters from 15+ universities across Pakistan. Officially supported by Google Developer Groups and sponsored by GitHub featuring prize pool support and student swags.',
+      type: 'HACKATHON',
+      location: 'E-Rozgar Center, CUI Wah Campus',
+      locationType: 'In-person',
+      date: new Date('2026-11-14T09:00:00.000Z'),
+      imageUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+      badgeUrl: '/GDG_Bevy_DefaultEventBanner_g3sdRZ4.webp',
+      isPublished: true,
+      tags: { create: [{ tag: 'Hackathon' }, { tag: 'AI & GenAI' }, { tag: 'GitHub' }, { tag: 'National Level' }, { tag: 'Inter-University' }] },
+      agendaItems: {
+        create: [
+          { order: 1, time: '09:00 AM', title: 'Opening Ceremony & National Hackathon Briefing', speaker: 'GDGoC Leadership', description: 'Welcoming 200+ developers from 15+ participating universities, unveiling AI problem tracks, evaluation rubrics, and rules.' },
+          { order: 2, time: '10:00 AM', title: 'Hacking Begins: AI & Intelligent Agents Track', speaker: 'Mentors & Judges', description: 'Teams begin building AI solutions, autonomous workflows, and data-driven systems.' },
+          { order: 3, time: '01:00 PM', title: 'Midway Checkpoint & Mentor Review', speaker: 'GitHub Campus Experts & Mentors', description: 'Technical guidance, architecture inspection, and troubleshooting.' },
+          { order: 4, time: '04:00 PM', title: 'Hacking Concludes & Pitch Demonstrations', speaker: 'Judging Panel', description: 'Live project pitches, Q&A, and technical judging of prototypes.' },
+          { order: 5, time: '05:30 PM', title: 'Closing Ceremony, Swag Distribution & Awards', speaker: 'Executive Team & Dignitaries', description: 'Announcement of winning teams, distribution of GitHub prize pool support, swag kits, and certificates.' },
+        ],
+      },
+    },
+  });
+
+  await prisma.event.upsert({
     where: { slug: 'hack-data-v1' },
     update: {},
     create: {
