@@ -51,7 +51,7 @@ const EventCard = React.memo(({ event, isActive, onClick, color }: { event: Even
           {event.description}
         </p>
         
-        <Link href={`/events/${event.slug}`} onClick={(e) => e.stopPropagation()}>
+        <Link href={event.slug === "mtm" ? "/mtm" : `/events/${event.slug}`} onClick={(e) => e.stopPropagation()}>
           <button className="register-btn">
             Register Now
             <ExternalLink size={18} />

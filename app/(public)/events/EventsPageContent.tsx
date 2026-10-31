@@ -104,9 +104,13 @@ const EventListItem = ({ title, slug, date, location, type, tags, description, b
           </div>
         )}
 
+        {slug === 'mtm' ? (
+          <a href="/mtm" className="details-btn" style={{ backgroundColor: themeColor }}>View details</a>
+        ) : (
         <Link href={`/events/${slug}`}>
           <button className="details-btn" style={{ backgroundColor: themeColor }}>View details</button>
         </Link>
+        )}
       </div>
     </div>
   );

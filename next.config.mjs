@@ -4,10 +4,7 @@ const nextConfig = {
     async rewrites() {
         return {
             beforeFiles: [
-                { source: '/mtm', destination: '/mtm/index.html' },
-                { source: '/mtm/handbook', destination: '/mtm/handbook/index.html' },
-                { source: '/mtm/register', destination: '/mtm/register/index.html' },
-                { source: '/events/mtm', destination: '/mtm/index.html' },
+                { source: '/events/mtm', destination: '/mtm' },
             ],
         };
     },
