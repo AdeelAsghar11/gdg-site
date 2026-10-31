@@ -2,12 +2,14 @@
 const nextConfig = {
     trailingSlash: false,
     async rewrites() {
-        return [
-            {
-                source: '/mtm',
-                destination: '/mtm/index.html',
-            },
-        ];
+        return {
+            beforeFiles: [
+                { source: '/mtm', destination: '/mtm/index.html' },
+                { source: '/mtm/handbook', destination: '/mtm/handbook/index.html' },
+                { source: '/mtm/register', destination: '/mtm/register/index.html' },
+                { source: '/events/mtm', destination: '/mtm/index.html' },
+            ],
+        };
     },
     async headers() {
         return [
@@ -25,7 +27,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: 'Cache-Control',
-                        value: 'public, max-age=31536000, immutable',
+                        value: 'public, max-age=0, must-revalidate',
                     },
                 ],
             },
